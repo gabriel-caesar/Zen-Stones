@@ -1,11 +1,12 @@
-import { Gem, Mail, Phone, MapPin } from 'lucide-react';
+import { Gem, Mail, Phone, MapPin, MailIcon } from 'lucide-react';
+import Link from 'next/link';
 import { FaFacebook, FaInstagram } from 'react-icons/fa';
 
 export default function Footer() {
   return (
     <footer className='bg-background border-t border-neutral-300'>
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12'>
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
+        <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
           {/* Brand */}
           <div className='space-y-4'>
             <div className='flex items-center'>
@@ -85,52 +86,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Customer Service */}
-          <div className='space-y-4'>
-            <h3 className='font-semibold'>Customer Service</h3>
-            <ul className='space-y-2 text-sm'>
-              <li>
-                <a
-                  href='#'
-                  className='text-neutral-500 hover:text-foreground transition-colors'
-                >
-                  Contact Us
-                </a>
-              </li>
-              <li>
-                <a
-                  href='#'
-                  className='text-neutral-500 hover:text-foreground transition-colors'
-                >
-                  Shipping Info
-                </a>
-              </li>
-              <li>
-                <a
-                  href='#'
-                  className='text-neutral-500 hover:text-foreground transition-colors'
-                >
-                  Returns
-                </a>
-              </li>
-              <li>
-                <a
-                  href='#'
-                  className='text-neutral-500 hover:text-foreground transition-colors'
-                >
-                  Size Guide
-                </a>
-              </li>
-              <li>
-                <a
-                  href='#'
-                  className='text-neutral-500 hover:text-foreground transition-colors'
-                >
-                  Care Instructions
-                </a>
-              </li>
-            </ul>
-          </div>
 
           {/* Newsletter */}
           <div className='space-y-4'>
@@ -139,16 +94,15 @@ export default function Footer() {
               Sends us an email and we will be more than happy to answer you.
             </p>
             <div className='space-y-2'>
-              <input 
-                type='email' 
-                placeholder='Enter your email' 
-                id='email-input-footer'
-                aria-label='email-input-footer'
-                className='rounded-md bg-neutral-100 w-full px-3 py-2 mb-2 text-[14px]'
-              />
-              <button className='w-full rounded-lg bg-black text-white py-1 hover:cursor-pointer hover:bg-black/60 transition-all'>
-                Send
-              </button>
+              <Link
+                href={'/inquiry'} 
+                className='w-1/2 lg:w-full flex justify-center items-center rounded-lg bg-black text-white py-1 hover:cursor-pointer hover:bg-black/60 transition-all'
+                id='footer-inquiry-button'
+                aria-label='footer-inquiry-button'
+              >
+                <MailIcon strokeWidth={1.5} className='mr-2' />
+                Inquiry
+              </Link>
             </div>
           </div>
         </div>
@@ -182,17 +136,6 @@ export default function Footer() {
           <p className='text-sm text-neutral-500'>
             © 2024 Zen Stones LLC. All rights reserved.
           </p>
-          <div className='flex space-x-4 text-sm text-neutral-500'>
-            <a href='#' className='hover:text-foreground transition-colors'>
-              Privacy Policy
-            </a>
-            <a href='#' className='hover:text-foreground transition-colors'>
-              Terms of Service
-            </a>
-            <a href='#' className='hover:text-foreground transition-colors'>
-              Cookie Policy
-            </a>
-          </div>
         </div>
       </div>
     </footer>

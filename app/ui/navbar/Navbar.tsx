@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { MailIcon, Menu } from 'lucide-react';
+import { MailIcon, Menu, UserStar } from 'lucide-react';
 import SideSearchBar from './SideSearchBar';
 import NavButton from './NavButton';
 import SearchBar from './SearchBar';
@@ -9,7 +9,7 @@ import Sidebar from './Sidebar';
 import Image from 'next/image';
 import Link from 'next/link';
 
-export default function Navbar() {
+export default function Navbar({ isAdmin }: { isAdmin: boolean | undefined }) {
   // opens side menu nav bar
   const [openSidebarMenu, setOpenSidebarMenu] = useState<boolean>(false);
   // opens side search form from side nav bar
@@ -102,12 +102,16 @@ export default function Navbar() {
 
       <Link 
         className='bg-neutral-900 lg:flex items-center justify-between text-white rounded-md text-md py-1 px-3 hover:cursor-pointer hover:bg-neutral-400 hover:text-neutral-900 hidden transition-all'
-        href={'/inquiry'}
+        href={isAdmin ? '/admin-space' : '/inquiry'}
         id='inquiry-button'
         aria-label='inquiry-button'
       >
-        <MailIcon strokeWidth={1.5} className='mr-2' />
-        Inquiry
+        {isAdmin ? (
+          <UserStar strokeWidth={1.5} className='mr-2' />
+        ) : (
+          <MailIcon strokeWidth={1.5} className='mr-2' />
+        )}
+        {isAdmin ? 'Admin Space' : 'Inquiry'}
       </Link>
 
       <Sidebar
@@ -116,6 +120,7 @@ export default function Navbar() {
         openSearchForm={openSearchForm}
         setOpenSearchForm={setOpenSearchForm}
         sideBarRef={sideBarRef}
+        isAdmin={isAdmin}
       />
     </nav>
   );

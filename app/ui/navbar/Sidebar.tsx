@@ -1,4 +1,4 @@
-import { ChevronDown, MailIcon, Search, X } from 'lucide-react';
+import { ChevronDown, MailIcon, Search, UserStar, X } from 'lucide-react';
 import { FaFacebook, FaInstagram } from 'react-icons/fa';
 import NavButton from './NavButton';
 import Link from 'next/link'
@@ -8,13 +8,15 @@ export default function Sidebar({
   setOpenSidebarMenu,
   openSearchForm,
   setOpenSearchForm,
-  sideBarRef
+  sideBarRef,
+  isAdmin
 }: {
   openSidebarMenu: boolean;
   setOpenSidebarMenu: React.Dispatch<React.SetStateAction<boolean>>;
   openSearchForm: boolean;
   setOpenSearchForm: React.Dispatch<React.SetStateAction<boolean>>;
   sideBarRef: React.RefObject<HTMLDivElement | null>;
+  isAdmin: boolean | undefined
 }) {
   return (
     <nav
@@ -108,9 +110,19 @@ export default function Sidebar({
         </a>
       </span>
 
-      <Link href={'/inquiry'} className='w-1/2 bg-neutral-900 flex items-center justify-between text-white rounded-md text-md py-1 px-3 hover:cursor-pointer hover:bg-neutral-400 hover:text-neutral-900 transition-all mt-10'>
-        <MailIcon strokeWidth={1.5} className='mr-2' />
-        Inquiry
+      <Link 
+        href={isAdmin ? '/admin-space' : '/inquiry'}
+        className='w-3/4 bg-neutral-900 flex justify-center items-center text-white rounded-md text-md p-1 hover:cursor-pointer hover:bg-neutral-400 hover:text-neutral-900 transition-all mt-10'
+        id='sidebar-inquiry-button'
+        aria-label='sidebar-inquiry-button'
+        onClick={() => setOpenSidebarMenu(false)}
+      >
+        {isAdmin ? (
+          <UserStar strokeWidth={1.5} className='mr-2' />
+        ) : (
+          <MailIcon strokeWidth={1.5} className='mr-2' />
+        )}
+        {isAdmin ? 'Admin Space' : 'Inquiry'}
       </Link>
     </nav>
   );

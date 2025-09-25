@@ -38,7 +38,7 @@ export function GemstoneCard({
         <div
           id='product-image-wrapper'
           aria-label='product-image-wrapper'
-          className='w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300'
+          className='w-full relative h-64 object-cover group-hover:scale-105 transition-transform duration-300'
         >
           <ImageSkeleton
             src={gemstone.imageUrl}
