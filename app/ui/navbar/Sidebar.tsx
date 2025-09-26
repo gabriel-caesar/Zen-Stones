@@ -1,7 +1,9 @@
-import { ChevronDown, MailIcon, Search, UserStar, X } from 'lucide-react';
+import { ChevronDown, LogOut, MailIcon, Search, UserStar, X } from 'lucide-react';
 import { FaFacebook, FaInstagram } from 'react-icons/fa';
 import NavButton from './NavButton';
 import Link from 'next/link'
+import { SessionPayload } from '@/app/types/types';
+import { logout } from '@/app/lib/actions';
 
 export default function Sidebar({
   openSidebarMenu,
@@ -9,14 +11,14 @@ export default function Sidebar({
   openSearchForm,
   setOpenSearchForm,
   sideBarRef,
-  isAdmin
+  session
 }: {
   openSidebarMenu: boolean;
   setOpenSidebarMenu: React.Dispatch<React.SetStateAction<boolean>>;
   openSearchForm: boolean;
   setOpenSearchForm: React.Dispatch<React.SetStateAction<boolean>>;
   sideBarRef: React.RefObject<HTMLDivElement | null>;
-  isAdmin: boolean | undefined
+  session: SessionPayload | undefined
 }) {
   return (
     <nav
@@ -111,19 +113,35 @@ export default function Sidebar({
       </span>
 
       <Link 
-        href={isAdmin ? '/admin-space' : '/inquiry'}
-        className='w-3/4 bg-neutral-900 flex justify-center items-center text-white rounded-md text-md p-1 hover:cursor-pointer hover:bg-neutral-400 hover:text-neutral-900 transition-all mt-10'
+        href={session?.isAdmin ? '/admin-space' : '/inquiry'}
+        className='w-2/3 bg-neutral-900 flex justify-center items-center text-white rounded-md text-md p-1 hover:cursor-pointer hover:bg-neutral-400 hover:text-neutral-900 transition-all mt-10'
         id='sidebar-inquiry-button'
         aria-label='sidebar-inquiry-button'
         onClick={() => setOpenSidebarMenu(false)}
       >
-        {isAdmin ? (
+        {session?.isAdmin ? (
           <UserStar strokeWidth={1.5} className='mr-2' />
         ) : (
           <MailIcon strokeWidth={1.5} className='mr-2' />
         )}
-        {isAdmin ? 'Admin Space' : 'Inquiry'}
+        {session?.isAdmin ? 'Admin Space' : 'Inquiry'}
       </Link>
+
+      {session?.userId && (
+        <button
+          id='logout-button'
+          aria-label='logout-button'
+          className='w-1/2 bg-neutral-700 flex justify-center items-center text-white rounded-md text-md p-1 hover:cursor-pointer hover:bg-neutral-400 hover:text-neutral-900 transition-all mt-3'
+          onClick={() => {
+            logout();
+            setOpenSidebarMenu(false);
+          }}
+        >
+          <LogOut strokeWidth={1.5} className='mr-2' />
+          Log out
+        </button>
+      )}
+
     </nav>
   );
 }

@@ -12,11 +12,11 @@ export const metadata: Metadata = {
   `,
 };
 
-const getAdminFlag = async () => {
+const getSession = async () => {
   // getting the cookie and decrypting it
   const cookie = (await cookies()).get('session')?.value; // cookie is a cryptic long key
   const session = await decrypt(cookie); // decrypt the long cookie key into actual data
-  return session?.isAdmin;
+  return session;
 }
 
 export default async function RootLayout({
@@ -25,14 +25,14 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
 
-  const isAdmin = await getAdminFlag();
+  const session = await getSession();
 
   return (
     <html lang="en">      
       <body
         className={`antialiased overflow-x-hidden overflow-y-auto`}
       >
-        <Navbar isAdmin={isAdmin} />
+        <Navbar session={session} />
         {/* padding === navbar.height to make content under navbar be pushed downwards */}
         <main className='pt-[112px]'>
           {children}

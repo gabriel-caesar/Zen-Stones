@@ -12,3 +12,16 @@ export type SessionPayload = {
   isAdmin: boolean;
   expiresAt: Date;
 };
+
+export type Product = {
+  id: string;
+  photo: string;
+  name: string;
+  category: 'Jewelry' | 'Metaphysical';
+  subcategory: string;
+  price: number;
+  properties: string[];
+  description: string;
+  rarity: 'Common' | 'Uncommon' | 'Rare' | 'Very Rare' | 'Legendary';
+  weight: number;
+}

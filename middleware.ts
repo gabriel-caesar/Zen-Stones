@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { decrypt } from './app/lib/session';
 
 // defining route permissions
-const protectedRoutes = [''];
+const protectedRoutes = ['/admin-space', '/admin-space/manage-subcategories', '/admin-space/manage-products'];
 const publicRoutes = ['/login'];
 
 export default async function middleware(req: NextRequest) {
@@ -18,6 +18,10 @@ export default async function middleware(req: NextRequest) {
   const session = await decrypt(cookie); // decrypt the long cookie key into actual data
 
   if (isPublicRoute && session?.userId) {
+    return NextResponse.redirect(new URL('/', req.nextUrl));
+  }
+
+  if (isProtectedRoute && !session?.userId) {
     return NextResponse.redirect(new URL('/', req.nextUrl));
   }
 

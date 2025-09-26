@@ -8,8 +8,9 @@ import SearchBar from './SearchBar';
 import Sidebar from './Sidebar';
 import Image from 'next/image';
 import Link from 'next/link';
+import { SessionPayload } from '@/app/types/types';
 
-export default function Navbar({ isAdmin }: { isAdmin: boolean | undefined }) {
+export default function Navbar({ session }: { session: SessionPayload | undefined }) {
   // opens side menu nav bar
   const [openSidebarMenu, setOpenSidebarMenu] = useState<boolean>(false);
   // opens side search form from side nav bar
@@ -102,16 +103,16 @@ export default function Navbar({ isAdmin }: { isAdmin: boolean | undefined }) {
 
       <Link 
         className='bg-neutral-900 lg:flex items-center justify-between text-white rounded-md text-md py-1 px-3 hover:cursor-pointer hover:bg-neutral-400 hover:text-neutral-900 hidden transition-all'
-        href={isAdmin ? '/admin-space' : '/inquiry'}
+        href={session?.isAdmin ? '/admin-space' : '/inquiry'}
         id='inquiry-button'
         aria-label='inquiry-button'
       >
-        {isAdmin ? (
+        {session?.isAdmin ? (
           <UserStar strokeWidth={1.5} className='mr-2' />
         ) : (
           <MailIcon strokeWidth={1.5} className='mr-2' />
         )}
-        {isAdmin ? 'Admin Space' : 'Inquiry'}
+        {session?.isAdmin ? 'Admin Space' : 'Inquiry'}
       </Link>
 
       <Sidebar
@@ -120,7 +121,7 @@ export default function Navbar({ isAdmin }: { isAdmin: boolean | undefined }) {
         openSearchForm={openSearchForm}
         setOpenSearchForm={setOpenSearchForm}
         sideBarRef={sideBarRef}
-        isAdmin={isAdmin}
+        session={session}
       />
     </nav>
   );

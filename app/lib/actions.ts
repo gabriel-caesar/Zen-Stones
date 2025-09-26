@@ -29,16 +29,16 @@ export async function login(prevState: any, formData: FormData) {
   }
 
   // destructuring the email from the validated user
-  const { email } = result.data;
+  const { email, password } = result.data;
 
   // getting the user from db
-  const dbUser = await getUserFromDb(email);
+  const dbUser = await getUserFromDb(email, password);
 
   // if it wasn't able to get the user from db, credentials were invalid
   if (!dbUser) {
     return {
       errors: {
-        email: ['Invalid credentials']
+        password: ['Invalid credentials']
       }
     }
   }
@@ -50,12 +50,12 @@ export async function login(prevState: any, formData: FormData) {
   redirect('/');
 };
 
-async function getUserFromDb(email: string):Promise<User | undefined> {
+async function getUserFromDb(email: string, password: string):Promise<User | undefined> {
   try {
 
     // querying the database for the user
     const user = await sql<User[]>`
-      SELECT * FROM users WHERE email = ${email};
+      SELECT * FROM users WHERE email = ${email} AND password = ${password};
     `
 
     return user[0];
