@@ -1,9 +1,11 @@
+import { getSubcategories } from './lib/actions';
 import type { Metadata } from "next";
 import { cookies } from 'next/headers';
 import { decrypt } from './lib/session';
 import Footer from './ui/footer/Footer';
 import Navbar from './ui/navbar/Navbar';
 import './css/globals.css';
+import './css/scrollbars.css';
 
 export const metadata: Metadata = {
   title: "Zen Stones",
@@ -27,12 +29,14 @@ export default async function RootLayout({
 
   const session = await getSession();
 
+  const subcategories = await getSubcategories();
+
   return (
     <html lang="en">      
       <body
         className={`antialiased overflow-x-hidden overflow-y-auto`}
       >
-        <Navbar session={session} />
+        <Navbar session={session} subcategories={subcategories} />
         {/* padding === navbar.height to make content under navbar be pushed downwards */}
         <main className='pt-[112px]'>
           {children}

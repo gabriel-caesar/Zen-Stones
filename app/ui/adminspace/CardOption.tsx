@@ -12,7 +12,7 @@ export default function CardOption({
   return (
     <Link
       href={href}
-      className='w-2/3 md:w-1/2 lg:w-3/4 lg:py-15 py-10 px-4 flex border-1 border-neutral-800 rounded-lg bg-neutral-200 shadow-lg hover:cursor hover:pt-12 hover:w-3/4 hover:bg-neutral-300 hover:shadow-blue-300 transition-all'
+      className='w-2/3 md:w-1/2 lg:w-3/4 lg:py-15 py-10 px-4 flex border-1 border-neutral-800 rounded-lg bg-neutral-200 shadow-lg hover:cursor hover:pt-12 hover:w-3/4 hover:bg-neutral-300 hover:shadow-blue-300 active:bg-blue-300 transition-all'
     >
       <Icon className='mr-2' />
       {text}

@@ -5,32 +5,34 @@ export default function Hero() {
   // compacted image objects for the Hero's grid
   const featuredImages = [
     {
-      url: '/ruby-photo.jpeg',
+      url: '/azurite-ring-hero.jpg',
+      className: 'hidden',
       col: 1,
       row: 1,
     },
     {
-      url: '/assorted-crystals.jpeg',
+      url: '/buddha-statue-hero.jpg',
       col: 2,
       row: 1,
     },
     {
-      url: '/tigers-eye.jpeg',
+      url: '/jade-donut-necklace.jpg',
       col: 3,
       row: 1,
     },
     {
-      url: '/purple-gemstone.jpeg',
+      url: '/flowers-stones-hero.jpg',
       col: 1,
       row: 2,
     },
     {
-      url: '/sterling-silver-rings.png',
+      url: '/chakra-candles-hero.jpg',
+      className: 'hidden',
       col: 2,
       row: 2,
     },
     {
-      url: '/amethyst.png',
+      url: '/sterling-purple-necklace.jpg',
       col: 3,
       row: 2,
     },
@@ -39,12 +41,12 @@ export default function Hero() {
   return (
     <section className='relative min-h-[700px] flex items-center justify-center overflow-hidden'>
       {/* Background Image */}
-      <div className='absolute grid grid-cols-3 auto-rows-fr gap-2 grid-flow-row-dense p-1 inset-0 z-0'>
+      <div className='absolute grid grid-cols-2 md:grid-cols-3 auto-rows-fr gap-2 grid-flow-row-dense p-1 inset-0 z-0'>
         {featuredImages.map((img, index) => {
           return (
             <div
               key={index}
-              className={`relative w-full h-full col-span-${img.col} row-span-${img.row}`}
+              className={`${img.className} md:block relative w-full h-full col-span-${img.col} row-span-${img.row}`}
             >
               <ImageSkeleton
                 src={img.url}

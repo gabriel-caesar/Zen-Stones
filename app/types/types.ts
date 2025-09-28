@@ -13,11 +13,12 @@ export type SessionPayload = {
   expiresAt: Date;
 };
 
+export type Category = 'Jewelry' | 'Metaphysical' | 'Sterling Silver'
+
 export type Product = {
   id: string;
-  photo: string;
   name: string;
-  category: 'Jewelry' | 'Metaphysical';
+  category: Category;
   subcategory: string;
   price: number;
   properties: string[];
@@ -25,3 +26,23 @@ export type Product = {
   rarity: 'Common' | 'Uncommon' | 'Rare' | 'Very Rare' | 'Legendary';
   weight: number;
 }
+
+export type ProductWithImages = Product & {
+  urls: string[];
+};
+
+export type ProductImage = {
+  id: string;
+  product_id: string;
+  url: string;
+  position: number;
+  created_at: string;
+}
+
+export type SubCategory = {
+  id: string;
+  subcategory: string;
+  parent_category: Category;
+  featured_image: string;
+}
+

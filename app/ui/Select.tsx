@@ -1,7 +1,7 @@
 'use client';
 
 import { ChevronDown } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function Select({
   options,
@@ -12,7 +12,7 @@ export default function Select({
   ariaLabel,
   name,
 }: {
-  options: string[];
+  options: string[] | undefined;
   selector: string;
   setSelector: React.Dispatch<React.SetStateAction<string>>;
   className?: string;
@@ -22,8 +22,12 @@ export default function Select({
 }) {
   const [openDropdown, setOpenDropdown] = useState<boolean>(false);
 
+  const noOptionsRef = useRef<HTMLOptionElement | null>(null)
+
   useEffect(() => {
-    setSelector(options[0]); // selector will always be the first option of the dropdown
+    if (options) {
+      setSelector(options[0]); // selector will always be the first option of the dropdown
+    }
   }, []);
 
   return (
@@ -37,7 +41,7 @@ export default function Select({
       aria-label={ariaLabel ? ariaLabel : 'container-wrapper'}
     >
       <h3>
-        {selector}
+        {options && options.length > 0 ? selector : 'Choose one option'}
       </h3>
 
       <ChevronDown className={`${openDropdown ? '-rotate-180' : 'rotate-0'} transition-all duration-300`} />
@@ -51,7 +55,8 @@ export default function Select({
         id='dropdown'
         aria-label='dropdown'
       >
-        {options.map((opt) => (
+        {options && options.length > 0 ? (
+          options?.map((opt) => (
           <option 
             key={opt} 
             value={opt}
@@ -62,7 +67,13 @@ export default function Select({
           >
             {opt}
           </option>
-        ))}
+        ))
+        ) : (
+          <option disabled value="" ref={noOptionsRef}>
+            No options available
+          </option>
+        )}
+        
       </div>
 
       {/* this is a hidden element just for form validation down the road */}

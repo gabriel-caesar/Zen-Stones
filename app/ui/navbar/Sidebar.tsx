@@ -1,9 +1,18 @@
-import { ChevronDown, LogOut, MailIcon, Search, UserStar, X } from 'lucide-react';
+'use client';
+
+import {
+  LogOut,
+  MailIcon,
+  Search,
+  UserStar,
+  X,
+} from 'lucide-react';
 import { FaFacebook, FaInstagram } from 'react-icons/fa';
-import NavButton from './NavButton';
-import Link from 'next/link'
-import { SessionPayload } from '@/app/types/types';
+import { SessionPayload, SubCategory } from '@/app/types/types';
 import { logout } from '@/app/lib/actions';
+import NavButton from './NavButton';
+import Link from 'next/link';
+import Accordion from './Accordion';
 
 export default function Sidebar({
   openSidebarMenu,
@@ -11,15 +20,23 @@ export default function Sidebar({
   openSearchForm,
   setOpenSearchForm,
   sideBarRef,
-  session
+  session,
+  subcategories,
 }: {
   openSidebarMenu: boolean;
   setOpenSidebarMenu: React.Dispatch<React.SetStateAction<boolean>>;
   openSearchForm: boolean;
   setOpenSearchForm: React.Dispatch<React.SetStateAction<boolean>>;
   sideBarRef: React.RefObject<HTMLDivElement | null>;
-  session: SessionPayload | undefined
+  session: SessionPayload | undefined;
+  subcategories: SubCategory[] | undefined;
 }) {
+
+  // filtering subcategories
+  const jewelrySubCategories = subcategories?.filter(subc => subc.parent_category === 'Jewelry');
+  const metaphysicalSubCategories = subcategories?.filter(subc => subc.parent_category === 'Metaphysical');
+  const sterlingSubCategories = subcategories?.filter(subc => subc.parent_category === 'Sterling Silver');
+
   return (
     <nav
       className={`
@@ -47,8 +64,8 @@ export default function Sidebar({
         id='sidebar-search-button'
         aria-label='sidebar-search-button'
         onClick={() => {
-          setOpenSearchForm(!openSearchForm)
-          setOpenSidebarMenu(!openSidebarMenu)
+          setOpenSearchForm(!openSearchForm);
+          setOpenSidebarMenu(!openSidebarMenu);
         }}
       >
         <Search size={16} className='mr-2' />
@@ -59,31 +76,17 @@ export default function Sidebar({
         aria-label='sidebar-buttons-wrapper'
         className='flex flex-col items-start justify-around w-full md:mt-10'
       >
-        <NavButton
-          className={`mt-3 w-full flex justify-between items-center`}
-        >
-          Jewelry
-          <ChevronDown strokeWidth={1} />
-        </NavButton>
 
-        <NavButton
-          className={`mt-3 w-full flex justify-between items-center`}
-        >
-          Metaphysical
-          <ChevronDown strokeWidth={1} />
-        </NavButton>
+        <Accordion text='Jewelry' array={jewelrySubCategories} />
 
-        <NavButton
-          className='mt-3 w-full flex justify-start'
-        >
+        <Accordion text='Metaphysical' array={metaphysicalSubCategories} />
+
+        <Accordion text='Sterling Silver' array={sterlingSubCategories} />
+
+        <NavButton className='mt-3 w-full flex justify-between items-center'>
           About
         </NavButton>
 
-        <NavButton
-          className='mt-3 w-full flex justify-start'
-        >
-          Our Story
-        </NavButton>
       </span>
 
       <span
@@ -91,7 +94,7 @@ export default function Sidebar({
         aria-label='social-media-container'
         className='flex flex-col w-full justify-between items-start text-4xl h-1/6 mt-10'
       >
-        <a 
+        <a
           href={'https://www.instagram.com/zenstonesjewelry/?hl=en'}
           target='_blank'
           className='hover:text-white hover:bg-black hover:cursor-pointer p-1 flex items-center rounded-md transition-all'
@@ -101,7 +104,7 @@ export default function Sidebar({
           <FaInstagram />
         </a>
 
-        <a 
+        <a
           className='hover:text-white hover:bg-black hover:cursor-pointer p-1 rounded-md transition-all'
           href={'https://www.facebook.com/p/zenstonesjewelry-100063528523781/'}
           target='_blank'
@@ -112,9 +115,9 @@ export default function Sidebar({
         </a>
       </span>
 
-      <Link 
+      <Link
         href={session?.isAdmin ? '/admin-space' : '/inquiry'}
-        className='w-2/3 bg-neutral-900 flex justify-center items-center text-white rounded-md text-md p-1 hover:cursor-pointer hover:bg-neutral-400 hover:text-neutral-900 transition-all mt-10'
+        className='w-2/3 bg-neutral-900 flex justify-center items-center text-white rounded-md text-md p-1 hover:cursor-pointer hover:bg-neutral-400 hover:text-neutral-900 active:bg-neutral-400/50 transition-all mt-10'
         id='sidebar-inquiry-button'
         aria-label='sidebar-inquiry-button'
         onClick={() => setOpenSidebarMenu(false)}
@@ -141,7 +144,6 @@ export default function Sidebar({
           Log out
         </button>
       )}
-
     </nav>
   );
 }

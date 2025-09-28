@@ -8,9 +8,16 @@ import SearchBar from './SearchBar';
 import Sidebar from './Sidebar';
 import Image from 'next/image';
 import Link from 'next/link';
-import { SessionPayload } from '@/app/types/types';
+import { SessionPayload, SubCategory } from '@/app/types/types';
+import NavbarDropdown from './NavbarDropdown';
 
-export default function Navbar({ session }: { session: SessionPayload | undefined }) {
+export default function Navbar({
+  session,
+  subcategories,
+}: {
+  session: SessionPayload | undefined;
+  subcategories: SubCategory[] | undefined;
+}) {
   // opens side menu nav bar
   const [openSidebarMenu, setOpenSidebarMenu] = useState<boolean>(false);
   // opens side search form from side nav bar
@@ -20,25 +27,36 @@ export default function Navbar({ session }: { session: SessionPayload | undefine
   // served to reference the button which opens the sidebar
   const sideBarButton = useRef<null | HTMLButtonElement>(null);
 
+  // filtering subcategories
+  const jewelrySubCategories = subcategories?.filter(
+    (subc) => subc.parent_category === 'Jewelry'
+  );
+  const metaphysicalSubCategories = subcategories?.filter(
+    (subc) => subc.parent_category === 'Metaphysical'
+  );
+  const sterlingSubCategories = subcategories?.filter(
+    (subc) => subc.parent_category === 'Sterling Silver'
+  );
+
   // if the user clicks out of the sidebar, close it
   useEffect(() => {
-  const handleClickOff = (e: MouseEvent) => {
-    if (
-      sideBarRef.current && // if the ref was assigned to the HTML element at this moment
-      sideBarButton.current && // if the ref was assigned to the HTML element at this moment
-      !sideBarRef.current.contains(e.target as Node) && // if the click target is not inside the sidebar
-      !sideBarButton.current.contains(e.target as Node) // if the click target is not sidebar button opener
-    ) {
-      setOpenSidebarMenu(false);
-    }
-  };
+    const handleClickOff = (e: MouseEvent) => {
+      if (
+        sideBarRef.current && // if the ref was assigned to the HTML element at this moment
+        sideBarButton.current && // if the ref was assigned to the HTML element at this moment
+        !sideBarRef.current.contains(e.target as Node) && // if the click target is not inside the sidebar
+        !sideBarButton.current.contains(e.target as Node) // if the click target is not sidebar button opener
+      ) {
+        setOpenSidebarMenu(false);
+      }
+    };
 
-  window.addEventListener("click", handleClickOff);
+    window.addEventListener('click', handleClickOff);
 
-  return () => {
-    window.removeEventListener("click", handleClickOff);
-  };
-}, [openSidebarMenu]);
+    return () => {
+      window.removeEventListener('click', handleClickOff);
+    };
+  }, [openSidebarMenu]);
 
   return (
     <nav
@@ -46,30 +64,31 @@ export default function Navbar({ session }: { session: SessionPayload | undefine
       aria-label='navigation-bar'
       className={`
         backdrop-blur bg-transparent
-        flex justify-around h-[112px] items-center w-full py-4 fixed top-0 z-4 border-b border-b-neutral-300
+        flex justify-around h-[112px] items-center w-full border-b-1 border-neutral-300 py-4 fixed top-0 z-4
       `}
     >
-      <Link href='/'>
+      <Link
+        href='/'
+        className='border-1 rounded-full h-25 w-25 p-2 flex justify-center items-center hover:bg-black/30 transition-all'
+      >
         <Image
-          src='/store-logo.png'
+          src='/store-logo-nobg.png'
           alt='store-logo-image'
           aria-label='store-logo-image'
-          width={80}
-          height={80}
+          width={100}
+          height={100}
         />
       </Link>
-
       <span
         aria-label='navigation-bar-buttons-wrapper'
         className='lg:flex items-center justify-around w-2/5 hidden'
       >
-        <NavButton>Jewelry</NavButton>
 
-        <NavButton>Metaphysical</NavButton>
-
-        <NavButton>About</NavButton>
-
-        <NavButton>Our Story</NavButton>
+        {/* Navbar header buttons */}
+        <NavbarDropdown array={jewelrySubCategories} text={'Jewelry'} />
+        <NavbarDropdown array={metaphysicalSubCategories} text={'Metaphysical'} />
+        <NavbarDropdown array={sterlingSubCategories} text={'Sterling Silver'} />
+        <NavButton className='py-10'>About</NavButton>
       </span>
 
       <SearchBar />
@@ -83,7 +102,7 @@ export default function Navbar({ session }: { session: SessionPayload | undefine
         />
       )}
 
-      {(openSearchForm) && (
+      {openSearchForm && (
         <div className='fixed w-full h-full md:hidden bg-black/50 z-5'></div>
       )}
 
@@ -101,7 +120,7 @@ export default function Navbar({ session }: { session: SessionPayload | undefine
         <Menu />
       </button>
 
-      <Link 
+      <Link
         className='bg-neutral-900 lg:flex items-center justify-between text-white rounded-md text-md py-1 px-3 hover:cursor-pointer hover:bg-neutral-400 hover:text-neutral-900 hidden transition-all'
         href={session?.isAdmin ? '/admin-space' : '/inquiry'}
         id='inquiry-button'
@@ -122,6 +141,7 @@ export default function Navbar({ session }: { session: SessionPayload | undefine
         setOpenSearchForm={setOpenSearchForm}
         sideBarRef={sideBarRef}
         session={session}
+        subcategories={subcategories}
       />
     </nav>
   );

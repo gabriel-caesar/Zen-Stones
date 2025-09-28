@@ -1,9 +1,11 @@
 export default function NavButton({
   children,
   className,
+  onClick,
 }: {
   children: React.ReactNode;
   className?: string;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>
 }) {
   return (
     <button
@@ -11,8 +13,9 @@ export default function NavButton({
       aria-label={`${children}-nav-button`}
       className={`
         ${className}
-        text-md hover:cursor-pointer hover:bg-neutral-900 hover:text-white transition-all rounded-md py-1 px-2  
+        text-md hover:border-b-black hover:text-blue-500 hover:cursor-pointer transition-all border-transparent border-4 py-1 px-2  
       `}
+      onClick={onClick}
     >
       {children}
     </button>

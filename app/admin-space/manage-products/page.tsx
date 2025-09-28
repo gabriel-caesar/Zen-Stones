@@ -1,11 +1,30 @@
+import { fetchFilteredProducts } from '@/app/lib/data';
 import AddProductForm from '@/app/ui/adminspace/AddProductForm';
-import SearchProduct from '@/app/ui/adminspace/SearchProduct';
+import FeedbackDialog from '@/app/ui/adminspace/FeedbackDialog';
+import SearchProduct from '@/app/ui/adminspace/search-product/SearchProduct';
 
-export default function ManageProducts() {
+export default async function ManageProducts(props: {
+  searchParams?: Promise<{
+    product_added?: string;
+    query?: string;
+    page?: string;
+  }>;
+}) {
+  // awaiting the params to get the URL key/value pairs
+  const searchParams = await props.searchParams;
+  const query = searchParams?.query || '';
+  const currentPage = Number(searchParams?.page) || 1;
+
+  const products = await fetchFilteredProducts(query, currentPage);
+
   return (
-    <div className='flex flex-col justify-center items-center lg:flex-row lg:items-start lg:mb-10'>
+    <div className='flex flex-col justify-center items-center lg:flex-row lg:items-start lg:mb-10 relative'>
+      <FeedbackDialog
+        text='Added product successfully'
+        params={searchParams?.product_added}
+      />
+      <SearchProduct products={products} />
       <AddProductForm />
-      <SearchProduct />
     </div>
-  )
+  );
 }
