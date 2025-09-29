@@ -1,7 +1,7 @@
 'use client';
 
 import { ChevronDown } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function Select({
   options,
@@ -21,8 +21,6 @@ export default function Select({
   name: string;
 }) {
   const [openDropdown, setOpenDropdown] = useState<boolean>(false);
-
-  const noOptionsRef = useRef<HTMLOptionElement | null>(null)
 
   useEffect(() => {
     if (options) {
@@ -48,32 +46,32 @@ export default function Select({
 
       <div
         className={`
-          ${openDropdown ? 'opacity-100 z-1' : 'opacity-0 -z-1'}
-          absolute rounded-lg bg-neutral-200 p-2 border-1 border-neutral-500 shadow-lg transition-all
+          ${openDropdown ? "opacity-100 z-10" : "opacity-0 -z-10"}
+          absolute rounded-lg bg-neutral-200 p-2 border border-neutral-500 shadow-lg transition-all
           top-11 w-full left-0
         `}
-        id='dropdown'
-        aria-label='dropdown'
+        id="dropdown"
+        aria-label="dropdown"
+        role="listbox"
       >
-        {options && options.length > 0 ? (
-          options?.map((opt) => (
-          <option 
-            key={opt} 
-            value={opt}
-            id='dropdown-option'
-            aria-label={`${opt}-dropdown-option`}
-            className = {`hover:cursor-pointer hover:bg-white hover:border-black rounded-lg py-1 px-3 border-1 border-transparent transition-all`}
-            onClick={() => setSelector(opt)}
-          >
-            {opt}
-          </option>
-        ))
-        ) : (
-          <option disabled value="" ref={noOptionsRef}>
-            No options available
-          </option>
-        )}
-        
+        <ul>
+          {options && options.length > 0 ? (
+            options.map((opt) => (
+              <li
+                key={opt}
+                role="option"
+                aria-selected={selector === opt}
+                data-value={opt}
+                className="hover:cursor-pointer hover:bg-white hover:border-black rounded-lg py-1 px-3 border border-transparent transition-all"
+                onClick={() => setSelector(opt)}
+              >
+                {opt}
+              </li>
+            ))
+          ) : (
+            <li className="text-neutral-500 py-1 px-3">No options available</li>
+          )}
+        </ul>
       </div>
 
       {/* this is a hidden element just for form validation down the road */}

@@ -1,11 +1,12 @@
 'use client';
 
-import { Box } from 'lucide-react';
+import { Box, Loader2 } from 'lucide-react';
 import Select from '../Select';
 import { useActionState, useEffect, useState } from 'react';
 import { createSubCategory } from '@/app/lib/actions';
 import { Category, SubCategory } from '@/app/types/types';
 import InputImage from '../InputImage';
+import { useFormStatus } from 'react-dom';
 
 export default function ManageSubCategoryForm({
   subcategories,
@@ -167,22 +168,33 @@ export default function ManageSubCategoryForm({
         </>
       )}
 
-      <button
-        className={`
-          sm:w-1/2 w-full lg:w-full mt-10
-          hover:cursor-pointer hover:bg-black/60 text-center rounded-lg py-2 transition-all
-          ${
-            toggleDelete
-              ? 'bg-red-500 text-black font-bold'
-              : 'bg-black text-white'
-          }
-        `}
-        id={`${toggleDelete ? 'delete' : 'add'}-subcategory-button`}
-        aria-label={`${toggleDelete ? 'delete' : 'add'}-subcategory-button`}
-        onClick={() => {}}
-      >
-        {toggleDelete ? 'Delete Sub-category' : 'Add Sub-category'}
-      </button>
+      <SubmitButton toggleDelete={toggleDelete} />
     </form>
   );
+}
+
+function SubmitButton({ toggleDelete } : { toggleDelete: boolean }) {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      type='submit'
+      disabled={ pending }
+      id={`${toggleDelete ? 'delete' : 'add'}-subcategory-button`}
+      aria-label={`${toggleDelete ? 'delete' : 'add'}-subcategory-button`}
+      className={`
+          sm:w-1/2 w-full lg:w-full mt-10 flex justify-center items-center
+           hover:bg-black/60 text-center rounded-lg py-2 transition-all
+          ${
+            pending 
+              ? 'bg-black/50 hover:cursor-not-allowed'
+              : toggleDelete
+                ? 'bg-red-500 text-black font-bold hover:cursor-pointer'
+                : 'bg-black text-white hover:cursor-pointer'
+          }
+        `}
+    >
+      {toggleDelete ? 'Delete Sub-category' : 'Add Sub-category'}
+      {pending && <Loader2 strokeWidth={1.5} className='loading ml-2' />}
+    </button>
+  )
 }

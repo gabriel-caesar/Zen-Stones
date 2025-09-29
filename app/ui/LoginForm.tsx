@@ -2,7 +2,7 @@
 
 import { useActionState, useState } from 'react';
 import { useFormStatus } from 'react-dom';
-import { LogIn } from 'lucide-react';
+import { Loader2, LogIn } from 'lucide-react';
 import { login } from '../lib/actions';
 
 export default function LoginForm() {
@@ -83,14 +83,15 @@ function SubmitButton() {
     <button
       type='submit'
       disabled={ pending }
-      id='send-inquiry-button'
-      aria-label='send-inquiry-button'
-      className='
-        sm:w-1/2
-        rounded-lg w-full bg-black text-white hover:cursor-pointer hover:bg-black/60 py-2 mt-6 
-      '
+      id='login-button'
+      aria-label='login-button'
+      className={`
+        sm:w-1/2 ${pending ? 'bg-black/50 hover:cursor-not-allowed' : 'bg-black hover:cursor-pointer'}
+        rounded-lg w-full text-white hover:bg-black/60 py-2 mt-6 flex items-center justify-center
+      `}
     >
       Log In
+      {pending && <Loader2 strokeWidth={1.5} className='loading ml-2' />}
     </button>
   )
 }

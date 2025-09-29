@@ -2,7 +2,7 @@
 
 import ProductCardSkeleton from '../../skeletons/ProductCardSkeleton';
 import SearchBarAdmin from './SearchBarAdmin';
-import ProductCards from './ProductCards';
+import EditOrDeleteProductCard from './EditOrDeleteProductCard';
 import { ProductWithImages } from '@/app/types/types';
 import { PackageSearch } from 'lucide-react';
 import { Suspense } from 'react';
@@ -28,7 +28,7 @@ export default function SearchProduct({
         id='product-cards-container'
       >
         <Suspense fallback={<ProductCardSkeleton />}>
-          <ProductCards products={products} />
+          <EditOrDeleteProductCard products={products} />
         </Suspense>
       </div>
     </div>

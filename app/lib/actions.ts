@@ -6,8 +6,25 @@ import { loginSchema, productSchema, subCategorySchema } from './schemas';
 import { Product, SubCategory, User } from '../types/types';
 import { redirect } from 'next/navigation';
 import postgres from 'postgres';
+import { headers } from 'next/headers';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+
+// gets base url dynamically
+export async function getBaseUrl() {
+  if (typeof window !== "undefined") {
+    // Browser runtime → relative works
+    return "";
+  }
+
+  // Some runtimes give Promise<ReadonlyHeaders>
+  const h = await headers();
+  const host = h.get("host");
+  const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
+
+  return `${protocol}://${host}`;
+}
+
 
 export async function createProduct(prevState: any, formData: FormData) {
   // validating the add product form
@@ -35,9 +52,8 @@ export async function createProduct(prevState: any, formData: FormData) {
     description,
   } = validatedFields.data;
 
-
-  // for the API fetch
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+  // awaiting the promise returned from the function
+  const baseUrl = await getBaseUrl();
 
   // uploading images to S3 AWS
   // when fetching from the deployed website, we don't need to specify the base URL, that's why is empty
@@ -94,8 +110,11 @@ export async function createSubCategory(prevState: any, formData: FormData) {
   // destructuring the form field values from the validated data
   const { category, subcategory } = validatedFields.data;
 
+  // awaiting the promise returned from the function
+  const baseUrl = await getBaseUrl();
+
   // uploading images to S3 AWS with the dynamic segment being the photo files
-  const res = await fetch(`http://localhost:3000/api/s3-upload/featuredPhoto`, {
+  const res = await fetch(`${baseUrl}/api/s3-upload/featuredPhoto`, {
     method: 'POST',
     body: formData,
   });

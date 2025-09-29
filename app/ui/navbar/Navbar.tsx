@@ -2,22 +2,24 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { MailIcon, Menu, UserStar } from 'lucide-react';
-import SideSearchBar from './SideSearchBar';
 import NavButton from './NavButton';
 import SearchBar from './SearchBar';
 import Sidebar from './Sidebar';
 import Image from 'next/image';
 import Link from 'next/link';
-import { SessionPayload, SubCategory } from '@/app/types/types';
 import NavbarDropdown from './NavbarDropdown';
+import { useRootContext } from '@/app/RootContext';
 
 export default function Navbar({
-  session,
-  subcategories,
+  searchFocus,
+  setSearchFocus,
 }: {
-  session: SessionPayload | undefined;
-  subcategories: SubCategory[] | undefined;
+  searchFocus: boolean;
+  setSearchFocus: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
+  // getting the provided values from context
+  const { session, subcategories } = useRootContext();
+
   // opens side menu nav bar
   const [openSidebarMenu, setOpenSidebarMenu] = useState<boolean>(false);
   // opens side search form from side nav bar
@@ -63,13 +65,16 @@ export default function Navbar({
       id='navigation-bar'
       aria-label='navigation-bar'
       className={`
-        backdrop-blur bg-transparent
-        flex justify-around h-[112px] items-center w-full border-b-1 border-neutral-300 py-4 fixed top-0 z-4
+        backdrop-blur ${searchFocus ? 'bg-white' : 'bg-transparent'}
+        flex justify-around h-[112px] items-center w-full border-b-1 border-neutral-300 py-4 fixed top-0 z-6
       `}
     >
       <Link
         href='/'
-        className='border-1 rounded-full h-25 w-25 p-2 flex justify-center items-center hover:bg-black/30 transition-all'
+        className={`
+          ${openSearchForm ? 'hidden' : 'flex'}
+          border-1 rounded-full h-25 w-25 p-2 justify-center items-center hover:bg-black/30 transition-all
+        `}
       >
         <Image
           src='/store-logo-nobg.png'
@@ -79,39 +84,42 @@ export default function Navbar({
           height={100}
         />
       </Link>
+
+      {/* Navbar header buttons */}
       <span
         aria-label='navigation-bar-buttons-wrapper'
-        className='lg:flex items-center justify-around w-2/5 hidden'
+        className={`overflow-hidden ${
+          searchFocus ? 'max-w-0' : 'max-w-full'
+        } lg:flex items-center justify-around w-2/5 hidden transition-all duration-500`}
       >
-
-        {/* Navbar header buttons */}
         <NavbarDropdown array={jewelrySubCategories} text={'Jewelry'} />
-        <NavbarDropdown array={metaphysicalSubCategories} text={'Metaphysical'} />
-        <NavbarDropdown array={sterlingSubCategories} text={'Sterling Silver'} />
-        <NavButton className='py-10'>About</NavButton>
+        <NavbarDropdown
+          array={metaphysicalSubCategories}
+          text={'Metaphysical'}
+        />
+        <NavbarDropdown
+          array={sterlingSubCategories}
+          text={'Sterling Silver'}
+        />
+        <NavButton className='py-10 hover:border-b-black hover:text-blue-500'>
+          About
+        </NavButton>
       </span>
 
-      <SearchBar />
 
-      {openSearchForm && (
-        <SideSearchBar
-          openSidebarMenu={openSidebarMenu}
-          setOpenSidebarMenu={setOpenSidebarMenu}
-          openSearchForm={openSearchForm}
-          setOpenSearchForm={setOpenSearchForm}
-        />
-      )}
-
-      {openSearchForm && (
-        <div className='fixed w-full h-full md:hidden bg-black/50 z-5'></div>
-      )}
+      <SearchBar 
+        searchFocus={searchFocus}
+        setSearchFocus={setSearchFocus} 
+        openSearchForm={openSearchForm}
+        setOpenSearchForm={setOpenSearchForm}
+      />
 
       <button
         className={`
-              ${openSidebarMenu ? 'opacity-0' : 'opacity-100'}
-              lg:hidden
-              hover:cursor-pointer hover:border-black border-2 border-transparent rounded-md p-1 transition-all
-            `}
+          ${openSearchForm ? 'hidden' : 'lg:hidden'}
+          ${openSidebarMenu ? 'opacity-0' : 'opacity-100'}
+          hover:cursor-pointer hover:border-black border-2 border-transparent rounded-md p-1 transition-all
+        `}
         id='sidebar-menu-button'
         aria-label='sidebar-menu-button'
         ref={sideBarButton}
@@ -121,17 +129,20 @@ export default function Navbar({
       </button>
 
       <Link
-        className='bg-neutral-900 lg:flex items-center justify-between text-white rounded-md text-md py-1 px-3 hover:cursor-pointer hover:bg-neutral-400 hover:text-neutral-900 hidden transition-all'
+        className={`
+          bg-neutral-900 items-center justify-between text-white rounded-md text-md p-1 w-35 hover:cursor-pointer hover:bg-neutral-400 hover:text-neutral-900 hidden transition-all
+          ${openSearchForm ? 'hidden' : 'lg:flex'}
+        `}
         href={session?.isAdmin ? '/admin-space' : '/inquiry'}
         id='inquiry-button'
         aria-label='inquiry-button'
       >
-        {session?.isAdmin ? (
-          <UserStar strokeWidth={1.5} className='mr-2' />
-        ) : (
-          <MailIcon strokeWidth={1.5} className='mr-2' />
-        )}
         {session?.isAdmin ? 'Admin Space' : 'Inquiry'}
+        {session?.isAdmin ? (
+          <UserStar strokeWidth={1.5} />
+        ) : (
+          <MailIcon strokeWidth={1.5} />
+        )}
       </Link>
 
       <Sidebar
@@ -139,6 +150,8 @@ export default function Navbar({
         setOpenSidebarMenu={setOpenSidebarMenu}
         openSearchForm={openSearchForm}
         setOpenSearchForm={setOpenSearchForm}
+        searchFocus={searchFocus}
+        setSearchFocus={setSearchFocus}
         sideBarRef={sideBarRef}
         session={session}
         subcategories={subcategories}

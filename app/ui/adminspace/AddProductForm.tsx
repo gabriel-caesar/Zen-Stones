@@ -9,6 +9,7 @@ import {
   FolderPen,
   Image,
   List,
+  Loader2,
   Table,
   Weight,
   X,
@@ -17,6 +18,8 @@ import { useActionState, useEffect, useState } from 'react';
 import Select from '../Select';
 import { createProduct, uniqueId } from '@/app/lib/actions';
 import InputImage from '../InputImage';
+import { useFormStatus } from 'react-dom';
+import { useRootContext } from '@/app/RootContext';
 
 export default function AddProductForm() {
   // form action
@@ -51,8 +54,19 @@ export default function AddProductForm() {
 
   // header categories for the custom dropdown
   const categories = ['Jewelry', 'Metaphysical', 'Sterling Silver'];
-  const subcategories = ['Bracelets', 'Necklaces', 'Earrings', 'Rings'];
+  const { subcategories } = useRootContext();
   const rarities = ['Common', 'Uncommon', 'Rare', 'Very Rare', 'Legendary'];
+
+  // getting all the subcategory names from the subcategories array of objects
+  const jewelrySubCategories = subcategories
+    ?.filter((obj) => obj.parent_category === 'Jewelry')
+    .map((obj) => obj.subcategory);
+  const metaphysicalSubCategories = subcategories
+    ?.filter((obj) => obj.parent_category === 'Metaphysical')
+    .map((obj) => obj.subcategory);
+  const sterlingSubCategories = subcategories
+    ?.filter((obj) => obj.parent_category === 'Sterling Silver')
+    .map((obj) => obj.subcategory);
 
   async function feedProperties() {
     if (productProperties.length <= 0) return;
@@ -65,14 +79,14 @@ export default function AddProductForm() {
     );
 
     // prevents overflow
-    const maxProps = arrayOfProperties.length === 4
+    const maxProps = arrayOfProperties.length === 4;
 
     if (isDuplicate) {
       setInputError('Cannot have duplicate properties');
       return;
     } else if (maxProps) {
       setInputError('Max number of properties reached');
-      return
+      return;
     }
 
     setArrayOfProperties((prev) => [...prev, newObj]);
@@ -81,6 +95,10 @@ export default function AddProductForm() {
     // if duplicate error is not empty
     if (inputError !== '') setInputError('');
   }
+
+  useEffect(() => {
+    setSelectSubCategory('Choose one option...')
+  }, [selectedCategory])
 
   useEffect(() => {
     if (state?.errors) {
@@ -119,7 +137,9 @@ export default function AddProductForm() {
         />
         {state?.errors?.name && (
           <p
-            className={`bg-red-500 rounded-lg w-full text-center px-2 py-2 text-white mt-2 ${wiggle ? 'wiggle-input' : ''}`}
+            className={`bg-red-500 rounded-lg w-full text-center px-2 py-2 text-white mt-2 ${
+              wiggle ? 'wiggle-input' : ''
+            }`}
             id='name-error-text'
             aria-label='name-error-text'
           >
@@ -143,7 +163,9 @@ export default function AddProductForm() {
         />
         {state?.errors?.category && (
           <p
-            className={`bg-red-500 rounded-lg w-full text-center px-2 py-2 text-white mt-2 ${wiggle ? 'wiggle-input' : ''}`}
+            className={`bg-red-500 rounded-lg w-full text-center px-2 py-2 text-white mt-2 ${
+              wiggle ? 'wiggle-input' : ''
+            }`}
             id='category-error-text'
             aria-label='category-error-text'
           >
@@ -158,7 +180,13 @@ export default function AddProductForm() {
           Sub-category
         </label>
         <Select
-          options={subcategories}
+          options={
+            selectedCategory === 'Jewelry'
+              ? jewelrySubCategories
+              : selectedCategory === 'Metaphysical'
+              ? metaphysicalSubCategories
+              : sterlingSubCategories
+          }
           selector={selectedSubCategory}
           setSelector={setSelectSubCategory}
           id='subcategory-selection'
@@ -167,7 +195,9 @@ export default function AddProductForm() {
         />
         {state?.errors?.subcategory && (
           <p
-            className={`bg-red-500 rounded-lg w-full text-center px-2 py-2 text-white mt-2 ${wiggle ? 'wiggle-input' : ''}`}
+            className={`bg-red-500 rounded-lg w-full text-center px-2 py-2 text-white mt-2 ${
+              wiggle ? 'wiggle-input' : ''
+            }`}
             id='subcategory-error-text'
             aria-label='subcategory-error-text'
           >
@@ -193,7 +223,9 @@ export default function AddProductForm() {
         />
         {state?.errors?.price && (
           <p
-            className={`bg-red-500 rounded-lg w-full text-center px-2 py-2 text-white mt-2 ${wiggle ? 'wiggle-input' : ''}`}
+            className={`bg-red-500 rounded-lg w-full text-center px-2 py-2 text-white mt-2 ${
+              wiggle ? 'wiggle-input' : ''
+            }`}
             id='price-error-text'
             aria-label='price-error-text'
           >
@@ -216,9 +248,9 @@ export default function AddProductForm() {
           }}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
-              e.preventDefault()
-              feedProperties()
-            } 
+              e.preventDefault();
+              feedProperties();
+            }
           }}
           type='text'
           className='rounded-lg bg-neutral-300 p-2 w-full focus-within:outline-none search-focus transition-all'
@@ -258,9 +290,9 @@ export default function AddProductForm() {
             {/* creating ghost inputs with the same name attribute so formData store them as string[] */}
             {arrayOfProperties.map((prop) => {
               return (
-                <input 
+                <input
                   key={prop.id}
-                  type='text' 
+                  type='text'
                   defaultValue={prop.name}
                   name='properties'
                   id={`${prop.name}-hidden-input`}
@@ -272,14 +304,20 @@ export default function AddProductForm() {
         )}
 
         {inputError !== '' && (
-          <p className={`bg-red-500 rounded-lg w-full text-center px-2 py-2 text-white mt-2 ${wiggle ? 'wiggle-input' : ''}`}>
+          <p
+            className={`bg-red-500 rounded-lg w-full text-center px-2 py-2 text-white mt-2 ${
+              wiggle ? 'wiggle-input' : ''
+            }`}
+          >
             {inputError}
           </p>
         )}
 
         {state?.errors?.properties && (
           <p
-            className={`bg-red-500 rounded-lg w-full text-center px-2 py-2 text-white mt-2 ${wiggle ? 'wiggle-input' : ''}`}
+            className={`bg-red-500 rounded-lg w-full text-center px-2 py-2 text-white mt-2 ${
+              wiggle ? 'wiggle-input' : ''
+            }`}
             id='properties-error-text'
             aria-label='properties-error-text'
           >
@@ -303,7 +341,9 @@ export default function AddProductForm() {
         />
         {state?.errors?.rarity && (
           <p
-            className={`bg-red-500 rounded-lg w-full text-center px-2 py-2 text-white mt-2 ${wiggle ? 'wiggle-input' : ''}`}
+            className={`bg-red-500 rounded-lg w-full text-center px-2 py-2 text-white mt-2 ${
+              wiggle ? 'wiggle-input' : ''
+            }`}
             id='rarity-error-text'
             aria-label='rarity-error-text'
           >
@@ -329,7 +369,9 @@ export default function AddProductForm() {
         />
         {state?.errors?.weight && (
           <p
-            className={`bg-red-500 rounded-lg w-full text-center px-2 py-2 text-white mt-2 ${wiggle ? 'wiggle-input' : ''}`}
+            className={`bg-red-500 rounded-lg w-full text-center px-2 py-2 text-white mt-2 ${
+              wiggle ? 'wiggle-input' : ''
+            }`}
             id='weight-error-text'
             aria-label='weight-error-text'
           >
@@ -355,7 +397,9 @@ export default function AddProductForm() {
         />
         {state?.errors?.description && (
           <p
-            className={`bg-red-500 rounded-lg w-full text-center px-2 py-2 text-white mt-2 ${wiggle ? 'wiggle-input' : ''}`}
+            className={`bg-red-500 rounded-lg w-full text-center px-2 py-2 text-white mt-2 ${
+              wiggle ? 'wiggle-input' : ''
+            }`}
             id='description-error-text'
             aria-label='description-error-text'
           >
@@ -364,14 +408,30 @@ export default function AddProductForm() {
         )}
       </section>
 
-      <button
-        id='create-product-button'
-        aria-label='create-product-button'
-        className='bg-black text-white w-full mt-8 p-2 rounded-lg hover:cursor-pointer hover:bg-black/60 transition-all'
-        type='submit'
-      >
-        Create
-      </button>
+      <SubmitButton />
     </form>
+  );
+}
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      type='submit'
+      disabled={pending}
+      id='create-product-button'
+      aria-label='create-product-button'
+      className={`
+        text-white w-full mt-8 p-2 rounded-lg hover:bg-black/60 transition-all flex items-center justify-center
+        ${
+          pending
+            ? 'bg-black/50 hover:cursor-not-allowed'
+            : 'bg-black hover:cursor-pointer'
+        }
+      `}
+    >
+      Create
+      {pending && <Loader2 strokeWidth={1.5} className='loading ml-2' />}
+    </button>
   );
 }

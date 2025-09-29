@@ -2,15 +2,16 @@ import { getSubcategories } from './lib/actions';
 import type { Metadata } from "next";
 import { cookies } from 'next/headers';
 import { decrypt } from './lib/session';
-import Footer from './ui/footer/Footer';
-import Navbar from './ui/navbar/Navbar';
-import './css/globals.css';
+import { RootContextProvider } from './RootContext';
+import LayoutWrapper from './ui/LayoutWrapper';
 import './css/scrollbars.css';
+import './css/globals.css';
+import { fetchFilteredProducts } from './lib/data';
 
 export const metadata: Metadata = {
   title: "Zen Stones",
   description: `
-    Your local place to buy ${<strong>metaphysical jewelry and accessories</strong>}, save more by browsing in Zen Stones.
+    Your local place to buy metaphysical jewelry and accessories, save more by browsing in Zen Stones.
   `,
 };
 
@@ -31,17 +32,22 @@ export default async function RootLayout({
 
   const subcategories = await getSubcategories();
 
+  const providedValues = {
+    session,
+    subcategories
+  }
+
   return (
     <html lang="en">      
       <body
         className={`antialiased overflow-x-hidden overflow-y-auto`}
       >
-        <Navbar session={session} subcategories={subcategories} />
-        {/* padding === navbar.height to make content under navbar be pushed downwards */}
-        <main className='pt-[112px]'>
-          {children}
-          <Footer />
-        </main>
+        <RootContextProvider value={providedValues}>
+          {/* Client component to manage search focus state */}
+          <LayoutWrapper>
+            {children}
+          </LayoutWrapper>
+        </RootContextProvider>
       </body>
     </html>
   );

@@ -13,12 +13,15 @@ import { logout } from '@/app/lib/actions';
 import NavButton from './NavButton';
 import Link from 'next/link';
 import Accordion from './Accordion';
+import { useEffect } from 'react';
 
 export default function Sidebar({
   openSidebarMenu,
   setOpenSidebarMenu,
   openSearchForm,
   setOpenSearchForm,
+  searchFocus,
+  setSearchFocus,
   sideBarRef,
   session,
   subcategories,
@@ -27,6 +30,8 @@ export default function Sidebar({
   setOpenSidebarMenu: React.Dispatch<React.SetStateAction<boolean>>;
   openSearchForm: boolean;
   setOpenSearchForm: React.Dispatch<React.SetStateAction<boolean>>;
+  searchFocus: boolean;
+  setSearchFocus: React.Dispatch<React.SetStateAction<boolean>>;
   sideBarRef: React.RefObject<HTMLDivElement | null>;
   session: SessionPayload | undefined;
   subcategories: SubCategory[] | undefined;
@@ -36,6 +41,22 @@ export default function Sidebar({
   const jewelrySubCategories = subcategories?.filter(subc => subc.parent_category === 'Jewelry');
   const metaphysicalSubCategories = subcategories?.filter(subc => subc.parent_category === 'Metaphysical');
   const sterlingSubCategories = subcategories?.filter(subc => subc.parent_category === 'Sterling Silver');
+
+  // only when in mobile, clean navbar to focus only searchbar
+  useEffect(() => {
+    function handleResize() {
+      if (window.innerWidth < 768) {
+        setOpenSearchForm(searchFocus);
+      } else {
+        setOpenSearchForm(false); // or keep desktop behavior
+      }
+    }
+
+    handleResize(); // run once on mount + whenever searchFocus changes
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, [searchFocus]);
 
   return (
     <nav
@@ -66,6 +87,7 @@ export default function Sidebar({
         onClick={() => {
           setOpenSearchForm(!openSearchForm);
           setOpenSidebarMenu(!openSidebarMenu);
+          setSearchFocus(true);
         }}
       >
         <Search size={16} className='mr-2' />

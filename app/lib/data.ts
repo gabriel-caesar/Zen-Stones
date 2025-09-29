@@ -39,8 +39,6 @@ export async function fetchFilteredProducts(query: string, currentPage: number) 
       OFFSET ${offset};
     `
 
-    console.log(products)
-
     return products; 
 
   } catch (error) {

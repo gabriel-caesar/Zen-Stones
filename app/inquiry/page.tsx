@@ -1,8 +1,16 @@
+'use client'
+
 import { UserStar } from 'lucide-react';
 import Link from 'next/link';
 import InquiryForm from '../ui/InquiryForm';
+import { logout } from '../lib/actions';
+import { useRootContext } from '../RootContext';
 
 export default function Inquiry() {
+
+  // getting the provided values from context
+  const { session } = useRootContext();
+
   return (
     <div
       className='flex flex-col justify-center items-center'
@@ -10,20 +18,32 @@ export default function Inquiry() {
     >
       <InquiryForm />
       <div
-        className='w-full border-t-1 border-neutral-500 px-2 py-6'
+        className='w-full border-t-1 border-neutral-300 px-2 py-6'
       >
         <h1 className='flex font-bold mb-6'>
           <UserStar className='ml-1 mr-2' />
-          Admin log in
+          {!session ? 'Admin log in' : 'Admin log out'}
         </h1>
-        <Link
-          href={'/login'}
-          className='bg-black text-white hover:cursor-pointer hover:bg-black/60 rounded-lg py-2 px-10'
-          id='login-button'
-          aria-label='login-button'
-        >
-          Log In
-        </Link>
+        
+        {!session ? (
+          <Link
+            href={'/login'}
+            className='bg-black text-white hover:cursor-pointer hover:bg-black/60 rounded-lg py-2 px-10 transition-all'
+            id='login-button'
+            aria-label='login-button'
+          >
+            Log In
+          </Link>
+        ) : (
+          <button
+            onClick={() => logout()}
+            className='active:bg-black/30 bg-black text-white hover:cursor-pointer hover:bg-black/60 rounded-lg py-2 px-10 transition-all'
+            id='logout-button'
+            aria-label='logout-button'
+          >
+            Log Out
+          </button>
+        )}
       </div>
     </div>
   )

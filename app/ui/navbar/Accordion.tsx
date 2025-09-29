@@ -17,8 +17,8 @@ export default function Accordion({
     <div className={`w-full`}>
       <NavButton
         className={`
-            ${openAccordion === text && 'bg-neutral-600 text-white'}
-            mt-3 w-full flex justify-between items-center transition-all
+            ${openAccordion === text && 'bg-neutral-600 text-white'} 
+            mt-3 w-full flex justify-between items-center transition-all rounded-lg hover:bg-neutral-400
           `}
         onClick={() => setOpenAccordion(openAccordion === text ? '' : text)}
       >

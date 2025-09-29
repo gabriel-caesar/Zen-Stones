@@ -11,7 +11,7 @@ export default function NavbarDropdown({
 }) {
   return (
     <div className='group'>
-      <NavButton className='group-hover:border-b-black border-1 py-10'>
+      <NavButton className='group-hover:border-b-black border-1 py-10 hover:border-b-black hover:text-blue-500'>
         {text}
       </NavButton>
 

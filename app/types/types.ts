@@ -1,3 +1,15 @@
+import { SetStateAction } from 'react';
+
+export type RootContextType = {
+  session: SessionPayload | undefined;
+  subcategories: SubCategory[];
+}
+
+export type WrapperContextType = {
+  searchFocus: boolean,
+  setSearchFocus: React.Dispatch<SetStateAction<boolean>>
+}
+
 export type User = {
   id: string,
   firstName: string,

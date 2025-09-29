@@ -13,7 +13,7 @@ export default function NavButton({
       aria-label={`${children}-nav-button`}
       className={`
         ${className}
-        text-md hover:border-b-black hover:text-blue-500 hover:cursor-pointer transition-all border-transparent border-4 py-1 px-2  
+        text-md hover:cursor-pointer transition-all border-transparent border-4 py-1 px-2  
       `}
       onClick={onClick}
     >

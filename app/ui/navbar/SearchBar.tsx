@@ -1,24 +1,89 @@
-'use client'
+'use client';
 
-import { Search } from 'lucide-react'
+import { Search, X } from 'lucide-react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useRef } from 'react';
 
-export default function SearchBar() {
+export default function SearchBar({
+  searchFocus,
+  setSearchFocus,
+  openSearchForm,
+  setOpenSearchForm,
+}: {
+  searchFocus: boolean;
+  setSearchFocus: React.Dispatch<React.SetStateAction<boolean>>;
+  openSearchForm: boolean;
+  setOpenSearchForm: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+  const searchParams = useSearchParams(); // searches for key/value pairs in the URL
+  const pathname = usePathname(); // current path (/admin-space/manage-products)
+  const { replace } = useRouter(); // url replacer
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  function handleSearch(term: string) {
+    const params = new URLSearchParams(searchParams);
+
+    // if there is user input, set it in the params, otherwise delete it
+    if (term) {
+      params.set('mainquery', term); // setting a key/value pair named query with the value term into the URL
+    } else {
+      params.delete('mainquery');
+    }
+
+    replace(`${pathname}?${params.toString()}`);
+  }
+
+
   return (
-    <form 
-      action="" 
+    <>
+      <form
+      action=''
       className={`
-        hidden md:w-3/5 lg:w-1/5
-        md:flex items-center px-4 rounded-lg bg-neutral-200 h-10 search-focus transition-all
+        ${
+          openSearchForm
+            ? 'flex w-3/4'
+            : `hidden  ${searchFocus ? 'lg:w-3/5' : 'lg:w-1/5'} md:w-3/5 md:flex focus-within:w-3/5`
+        }
+        items-center px-4 rounded-lg bg-neutral-200 h-10 search-focus transition-all duration-500
       `}
     >
       <Search size={16} className='mr-2 text-neutral-500' />
-      <input 
-        type="text" 
-        className='focus-within:outline-none w-full' 
+      <input
+        onChange={(e) => {
+          handleSearch(e.target.value);
+        }}
+        type='text'
+        ref={inputRef}
+        className='focus-within:outline-none w-full pr-2'
         placeholder='Search our catalog...'
         id='navigation-search-bar'
         aria-label='navigation-search-bar'
+        onFocus={() => setSearchFocus(true)}
+        onKeyDown={(e) => {
+          if (e.key === 'Escape') {
+            setSearchFocus(false);
+            (e.target as HTMLInputElement).blur(); // force unfocus
+          }
+        }}
       />
     </form>
-  )
+    <button
+      id='close-searchbar-button'
+      aria-label='close-searchbar-button'
+      className={`
+        ${searchFocus ? 'opacity-100' : 'opacity-0 absolute -z-99'} 
+        bg-neutral-600 text-white rounded-lg p-1
+        hover:cursor-pointer hover:bg-black active:bg-black/60 transition-all
+      `}
+      type='button'
+      onClick={() => {
+        inputRef.current?.blur();
+        setOpenSearchForm(false);
+        setSearchFocus(false);
+      }}
+    >
+      <X />
+    </button>
+    </>
+  );
 }
