@@ -58,15 +58,15 @@ export default function MainQueryProduct({
             return (
               <div
                 key={product.id}
-                className='rounded-2xl bg-white border-1 border-neutral-400 shadow-md w-full h-[429px] md:h-auto md:w-full relative overflow-hidden mb-3'
+                className='rounded-2xl bg-white border-1 border-neutral-400 shadow-md w-full h-[530px] md:h-auto md:w-full relative overflow-hidden mb-3'
               >
                 
                 {/* Product item card */}
-                <div className='md:flex w-full'>
+                <div className='md:flex w-full md:h-[272px]'>
                   <ProductCard product={product} isQuery={true} />
                 </div>
 
-                {/* Button wrapper to delete or edit product */}
+                {/* Button wrapper */}
                 <div className='flex flex-col my-3 px-2' id='buttons-wrapper'>
                   <Link
                     href={`/product/${product.id}`}

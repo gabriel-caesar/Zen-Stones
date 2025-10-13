@@ -1,11 +1,18 @@
 'use client';
 
-import { fetchIndications, fetchMaterials, fetchPrice, fetchTypes } from '@/app/lib/data';
+import {
+  fetchIndications,
+  fetchMaterials,
+  fetchPrice,
+  fetchProperties,
+  fetchTypes,
+} from '@/app/lib/data';
 import { SetStateAction, useEffect, useState } from 'react';
 import { FrequencyArray } from '@/app/types/types';
 import { Filter, X } from 'lucide-react';
 import Accordion from './Accordion';
 import { useProductsContext } from './ProductsContext';
+import { makeArray } from '@/app/lib/utils';
 
 export default function FilterSidebar({
   openSidebarFilter,
@@ -14,17 +21,11 @@ export default function FilterSidebar({
   openSidebarFilter: boolean;
   setOpenSidebarFilter: React.Dispatch<SetStateAction<boolean>>;
 }) {
-
   const { paramsArr } = useProductsContext();
 
-  const [
-    category,
-    type,
-    material,
-    max,
-    min,
-    indication,
-  ] = paramsArr;
+  const [category] = paramsArr;
+
+  const categoryArray = makeArray(category);
 
   // flags to identify what types to fetch
   const [isJewelryChecked, setIsJewelryChecked] = useState<boolean>(false);
@@ -32,13 +33,19 @@ export default function FilterSidebar({
 
   // array of types, materials and indications based on category filter
   const [typesArray, setTypesArray] = useState<FrequencyArray[] | []>([]);
-  const [materialsArray, setMaterialsArray] = useState<FrequencyArray[] | []>([]);
-  const [indicationsArray, setIndicationsArray] = useState<FrequencyArray[] | []>([]);
+  const [materialsArray, setMaterialsArray] = useState<FrequencyArray[] | []>(
+    []
+  );
+  const [indicationsArray, setIndicationsArray] = useState<
+    FrequencyArray[] | []
+  >([]);
+  const [propertiesArray, setPropertiesArray] = useState<FrequencyArray[] | []>(
+    []
+  );
 
   // max and min product prices
   const [maxPrice, setMaxPrice] = useState<number>(0);
   const [minPrice, setMinPrice] = useState<number>(0);
-
 
   // every time metaphysical or jewelry is checked
   // fetch the types and count accordingly
@@ -46,31 +53,37 @@ export default function FilterSidebar({
     let types: FrequencyArray[] = [];
     let materials: FrequencyArray[] = [];
     let indications: FrequencyArray[] = [];
+    let properties: FrequencyArray[] = [];
     let max: number = 0;
     let min: number = 0;
 
     async function dbCall() {
-      if (isMetaChecked && isJewelryChecked) {
+      if (categoryArray?.includes('jewelry') && categoryArray.includes('metaphysical')) {
         types = await fetchTypes('');
         materials = await fetchMaterials('');
         indications = await fetchIndications('');
+        properties = await fetchProperties('');
         max = await fetchPrice('', 'max');
         min = await fetchPrice('', 'min');
-
-      } else if (!isMetaChecked && !isJewelryChecked) {
+      } else if (!categoryArray) {
         types = await fetchTypes('');
         materials = await fetchMaterials('');
         indications = await fetchIndications('');
+        properties = await fetchProperties('');
         max = await fetchPrice('', 'max');
         min = await fetchPrice('', 'min');
-        
       } else {
         // based on the checked states, this variable decides what category will be used to filter
-        const categoryCondition = isMetaChecked ? 'Metaphysical' : isJewelryChecked ? 'Jewelry' : '';
+        const categoryCondition = categoryArray.includes('metaphysical')
+          ? 'Metaphysical'
+          : categoryArray.includes('jewelry')
+          ? 'Jewelry'
+          : '';
 
         types = await fetchTypes(categoryCondition);
         materials = await fetchMaterials(categoryCondition);
         indications = await fetchIndications(categoryCondition);
+        properties = await fetchProperties(categoryCondition);
         max = await fetchPrice(categoryCondition, 'max');
         min = await fetchPrice(categoryCondition, 'min');
       }
@@ -78,6 +91,7 @@ export default function FilterSidebar({
       setTypesArray(types);
       setMaterialsArray(materials);
       setIndicationsArray(indications);
+      setPropertiesArray(properties);
       setMaxPrice(max);
       setMinPrice(min);
     }
@@ -125,29 +139,19 @@ export default function FilterSidebar({
         />
 
         {/* Filter by Material section */}
-        <Accordion
-          text='Material'
-          array={materialsArray}
-        />
+        <Accordion text='Material' array={materialsArray} />
 
         {/* Filter by Price section */}
-        <Accordion 
-          text='Price'  
-          maxPrice={maxPrice}
-          minPrice={minPrice}
-        />
+        <Accordion text='Price' maxPrice={maxPrice} minPrice={minPrice} />
 
         {/* Filter by Indications section */}
-        <Accordion
-          text='Indications'
-          array={indicationsArray}
-        />
+        <Accordion text='Indications' array={indicationsArray} />
+
+        {/* Filter by Properties section */}
+        <Accordion text='Properties' array={propertiesArray} />
 
         {/* Filter by Type section */}
-        <Accordion
-          text='Type'
-          array={typesArray}
-        />
+        <Accordion text='Type' array={typesArray} />
       </section>
     </nav>
   );

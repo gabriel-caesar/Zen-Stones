@@ -38,7 +38,9 @@ export async function fetchSearchedProducts(
         products.name ILIKE ${`%${query}%`} OR
         products.category ILIKE ${`%${query}%`} OR
         products.product_type ILIKE ${`%${query}%`} OR
-        ${`%${query}%`} ILIKE ANY (products.material) OR
+        ${query} ILIKE ANY (products.material) OR
+        ${query} ILIKE ANY (products.indicated_for) OR
+        ${query} ILIKE ANY (products.properties) OR
         products.rarity ILIKE ${`%${query}%`}
       GROUP BY products.id
       ORDER BY products.id, products.category
@@ -118,74 +120,48 @@ export async function fetchFeaturedProducts() {
   }
 }
 
-// export async function fetchByCategory(categoryName: Category, currentPage: number) {
-
-//   // Page 1: (1 - 1) * 2 = 0 → skip 0 rows → rows 0–1
-//   // Page 2: (2 - 1) * 2 = 2 → skip 2 rows → rows 2–3
-//   // Page 3: (3 - 1) * 2 = 4 → skip 4 rows → rows 4–5
-//   // Page 4: (4 - 1) * 2 = 6 → skip 6 rows → rows 6–7
-//   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
-
-//   try {
-
-//     // get all products of a category with their images aggregated, then group by every product column
-//     const product = await sql<ProductWithImages[]>`
-//       SELECT
-//         products.id,
-//         products.name,
-//         products.category,
-//         products.product_type,
-//         products.price,
-//         products.properties,
-//         products.description,
-//         products.rarity,
-//         products.weight,
-//         products.size,
-//         products.indicated_for,
-//         products.meaning,
-//         products.material,
-//         products.featured_material,
-//         array_agg(product_images.url) AS urls
-//       FROM products
-//       JOIN product_images ON products.id = product_images.product_id
-//       WHERE products.category ILIKE ${categoryName}
-//       GROUP BY
-//         products.id,
-//         products.name,
-//         products.category,
-//         products.product_type,
-//         products.price,
-//         products.properties,
-//         products.description,
-//         products.rarity,
-//         products.weight,
-//         products.size,
-//         products.indicated_for,
-//         products.meaning,
-//         products.material,
-//         products.featured_material
-//         LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset};
-//     `
-
-//     return product;
-
-//   } catch (error) {
-//     throw new Error(`Couldn't fetch this category from database. ${error}`)
-//   }
-// }
-
 // fetch types for the catalog filter
 export async function fetchTypes(categoryName: string) {
   try {
     const types = await sql<FrequencyArray[]>`
       SELECT product_type AS name, COUNT(product_type) FROM products
       ${categoryName ? sql`WHERE category ILIKE ${categoryName}` : sql``}
-      GROUP BY product_type
+      GROUP BY product_type --plan
     `;
 
     return types;
   } catch (error) {
     throw new Error(`Couldn't fetch types. ${error}`);
+  }
+}
+
+// fetch properties for the catalog filter
+export async function fetchProperties(categoryName: string) {
+  try {
+     // grabbing all distincts property occurrences on products
+    const properties = await sql<{prop: string}[]>`
+     SELECT DISTINCT unnest(properties) AS prop 
+     FROM products
+     ${categoryName ? sql`WHERE category ILIKE ${categoryName}` : sql``}
+     GROUP BY properties
+    `
+
+    // it querys the occurrences of every property of every element
+    // and returns an {name: string; count: number} array
+    const frequency = await Promise.all(properties.map(async (m) => {
+      const x = await sql<FrequencyArray[]>`
+        SELECT 
+          ${m.prop} AS name,
+          COUNT(*) AS count
+        FROM products
+        WHERE ${m.prop} = ANY(properties);
+      `
+      return x[0];
+    }))
+
+    return frequency;
+  } catch (error) {
+    throw new Error(`Couldn't fetch properties. ${error}`);
   }
 }
 
@@ -303,13 +279,14 @@ export async function fetchFilteredProducts(filters: {
   category?: string | string[];
   type?: string | string[];
   material?: string | string[];
+  properties?: string | string[];
   max?: string;
   min?: string;
   indication?: string | string[];
   page: number;
   limit: number;
 }) {
-  const { category, type, material, max, min, indication, page, limit } = filters;
+  const { category, type, material, properties, max, min, indication, page, limit } = filters;
   const offset = (page - 1) * limit;
 
   // capitalizes the initial of every element inside of a given array (even for strings with spaces)
@@ -341,8 +318,8 @@ export async function fetchFilteredProducts(filters: {
     FROM products
     JOIN product_images ON products.id = product_images.product_id
     WHERE 1=1
-      ${category ? sql`AND products.category ILIKE ${category}` : sql``}
-      ${type ? sql`AND products.product_type ILIKE ${type}` : sql``}
+      ${category ? sql`AND ARRAY[products.category] && ${capitalizeInitial(category as string[])}` : sql``}
+      ${type ? sql`AND ARRAY[products.product_type] && ${capitalizeInitial(type as string[])}` : sql``}
       ${
         material
           ? sql`AND products.material && ${capitalizeInitial(
@@ -360,9 +337,16 @@ export async function fetchFilteredProducts(filters: {
             )}`
           : sql``
       }
+      ${
+        properties
+          ? sql`AND products.properties && ${capitalizeInitial(
+              properties as string[]
+            )}`
+          : sql``
+      }
     GROUP BY products.id
     ORDER BY products.name
-    LIMIT ${limit} OFFSET ${offset};
+    LIMIT ${limit} OFFSET ${offset}; --plano
   `;
 
   return products;

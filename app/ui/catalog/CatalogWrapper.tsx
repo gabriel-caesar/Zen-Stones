@@ -156,7 +156,7 @@ export default function CatalogWrapper({
                   <div
                     key={product.id}
                     className='
-                    md:w-full md:h-[330px] lg:h-[550px]
+                    md:w-full md:h-[450px] lg:h-[550px]
                     rounded-md bg-white border-1 border-neutral-400 shadow-md 
                     relative overflow-hidden mb-3 w-full h-[450px]
                   '

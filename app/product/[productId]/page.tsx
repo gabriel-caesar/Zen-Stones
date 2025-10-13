@@ -96,6 +96,15 @@ export default async function ProductPage({
               listTitle='Helps with:'
             />
 
+            {/* Product indications */}
+            <Accordion
+              text={'Properties'}
+              content={product.properties}
+              margin={'mb-3'}
+              isArray={true}
+              listTitle='This item has:'
+            />
+
             {/* Product materials */}
             <Accordion
               text={'Material'}

@@ -32,9 +32,14 @@ export default function Accordion({
   const { paramsArr } = useProductsContext();
 
   // destructuring the params from the arr
-  const [category, type, material, max, min, indication] = paramsArr;
+  const [category, type, material, properties, max, min, indication] = paramsArr;
 
-  // transforms a str into an array
+  // UI filter counts
+  const [filterCountArray, setFilterCountArray] = useState<number>(0);
+  const [filterCountPrice, setFilterCountPrice] = useState<number>(0);
+  const [filterCountCategory, setFilterCountCategory] = useState<number>(0);
+
+  // transforms a str into an arraya
   const makeArray = (arr: string[] | undefined) => {
     if (arr) {
       if (Array.isArray(arr)) return arr;
@@ -46,6 +51,7 @@ export default function Accordion({
   const typeArray = makeArray(type);
   const materialArray = makeArray(material);
   const indicationArray = makeArray(indication);
+  const propertiesArray = makeArray(properties);
 
   // checking if the filters are already set in the params
   // so the inputs are updated promptly for the front-end
@@ -53,6 +59,7 @@ export default function Accordion({
     if (typeArray?.some((x) => x === el.toLowerCase())) return true;
     if (materialArray?.some((x) => x === el.toLowerCase())) return true;
     if (indicationArray?.some((x) => x === el.toLowerCase())) return true;
+    if (propertiesArray?.some((x) => x === el.toLowerCase())) return true;
     return false;
   }
 
@@ -107,6 +114,37 @@ export default function Accordion({
     setMinRange(min ? min : minPrice);
   }, [maxPrice, minPrice]);
 
+  // check the URL for params
+  // if the params is found inside
+  // the array argument, so it will count up
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams);
+
+    const paramsArr = [...params.keys()];
+
+    // reseting the count before counting again
+    setFilterCountArray(0)
+    setFilterCountPrice(0)
+    setFilterCountCategory(0)
+
+    for (let i = 0; i < paramsArr.length; i++) {
+      if (text.toLowerCase() === paramsArr[i]) {
+        setFilterCountArray((prev) => prev + 1);
+      }
+    }
+
+    for (let i = 0; i < paramsArr.length; i++) {
+      if ('max' === paramsArr[i] || 'min' === paramsArr[i]) {
+        setFilterCountPrice((prev) => prev + 1);
+      }
+    }
+    for (let i = 0; i < paramsArr.length; i++) {
+      if ('category' === paramsArr[i]) {
+        setFilterCountCategory((prev) => prev + 1);
+      }
+    }
+  }, [searchParams]);
+
   return (
     <div
       id='accordion-wrapper'
@@ -124,9 +162,21 @@ export default function Accordion({
         `}
         id='open-accordion-button'
         aria-label='open-accordion-button'
-        
       >
-        <p className=''>{text}</p>
+        <div className='flex items-center justify-center'>
+          <p>
+            {text} 
+          </p>
+
+          <div className='rounded-md bg-black shadow-md px-2 text-white text-sm ml-2'>
+            {text === 'Price'
+              ? filterCountPrice
+              : isCategory
+              ? filterCountCategory
+              : filterCountArray}
+          </div>
+        </div>
+
         <ChevronDown
           className={`${
             openAccordion ? '-rotate-180' : 'rotate-0'
@@ -151,14 +201,14 @@ export default function Accordion({
             <div
               id='filter-check-box'
               className='flex items-center justify-start mb-3'
-              onClick={e => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
             >
               <input
                 type='checkbox'
                 id='jewelry-filter'
                 className='mr-2 mt-1 scale-120'
                 value='jewelry'
-                onClick={e => e.stopPropagation()}
+                onClick={(e) => e.stopPropagation()}
                 onChange={(e) => {
                   handleCheckFilter(
                     e.target.value,
@@ -171,20 +221,23 @@ export default function Accordion({
                   category === 'jewelry'
                     ? true
                     : Array.isArray(category)
-                      ? (category as string[]).some((x) => x === 'jewelry')
-                      : false
+                    ? (category as string[]).some((x) => x === 'jewelry')
+                    : false
                 }
               />
               <label htmlFor='jewelry-filter'>Jewelry</label>
             </div>
 
-            <div id='filter-check-box mb-2' onClick={e => e.stopPropagation()}>
+            <div
+              id='filter-check-box mb-2'
+              onClick={(e) => e.stopPropagation()}
+            >
               <input
                 type='checkbox'
                 id='metaphysical-filter'
                 className='mr-2 mt-1 scale-120'
                 value='metaphysical'
-                onClick={e => e.stopPropagation()}
+                onClick={(e) => e.stopPropagation()}
                 onChange={(e) => {
                   handleCheckFilter(
                     e.target.value,
@@ -197,15 +250,15 @@ export default function Accordion({
                   category === 'metaphysical'
                     ? true
                     : Array.isArray(category)
-                      ? (category as string[]).some((x) => x === 'metaphysical')
-                      : false
+                    ? (category as string[]).some((x) => x === 'metaphysical')
+                    : false
                 }
               />
               <label htmlFor='metaphysical-filter'>Metaphysical</label>
             </div>
           </>
         ) : text === 'Price' ? (
-          <div className='flex flex-col' onClick={e => e.stopPropagation()}>
+          <div className='flex flex-col' onClick={(e) => e.stopPropagation()}>
             <span className='flex flex-col items-start justify-center w-full mb-3'>
               <label htmlFor='min-price'>Max:</label>
               <span className='flex'>
@@ -231,7 +284,10 @@ export default function Accordion({
                 </p>
               </span>
             </span>
-            <span className='flex flex-col items-start justify-center' onClick={e => e.stopPropagation()}>
+            <span
+              className='flex flex-col items-start justify-center'
+              onClick={(e) => e.stopPropagation()}
+            >
               <label htmlFor='max-price'>Min:</label>
               <span className='flex'>
                 <input
@@ -260,13 +316,18 @@ export default function Accordion({
         ) : (
           array?.map((el) => {
             return (
-              <div id='filter-check-box' key={el.name} className='flex mb-2' onClick={e => e.stopPropagation()}>
+              <div
+                id='filter-check-box'
+                key={el.name}
+                className='flex mb-2'
+                onClick={(e) => e.stopPropagation()}
+              >
                 <input
                   type='checkbox'
                   id={`${el.name.toLowerCase()}-filter`}
                   className='mr-2 mt-1 scale-120'
                   value={el.name}
-                  onClick={e => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
                   onChange={(e) => {
                     handleCheckFilter(e.target.value, text, e.target.checked);
                   }}

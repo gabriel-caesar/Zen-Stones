@@ -5,6 +5,7 @@ import { ProductsContextWrapper } from '../ui/catalog/ProductsContext';
 import CatalogWrapper from '@/app/ui/catalog/CatalogWrapper';
 import MainQueryProduct from '@/app/ui/navbar/MainQueryProduct';
 import Pagination from '@/app/ui/Pagination';
+import { makeArray } from '../lib/utils';
 
 export default async function Catalog({
   searchParams,
@@ -16,6 +17,7 @@ export default async function Catalog({
     type?: string,
     material?: string,
     indications?: string,
+    properties?: string,
     max?: string,
     min?: string;
   }>;
@@ -23,18 +25,6 @@ export default async function Catalog({
 
   // pagination
   const ITEMS_PER_PAGE = 8;
-
-  // turn the string params into an array of strings
-  function makeArray(value: string | string[] | undefined): string[] | undefined {
-    if (value === undefined) {
-      return undefined;
-    }
-    else if (Array.isArray(value)) {
-      return value
-    } else {
-      return Array(value) as string[]
-    }
-  }
   
   // for the product search
   const awaitedSearchParams = await searchParams;
@@ -50,21 +40,25 @@ export default async function Catalog({
   const max = awaitedSearchParams?.max;
   const min = awaitedSearchParams?.min;
   const indication = awaitedSearchParams?.indications;
+  const properties = awaitedSearchParams?.properties;
   const page = Number(awaitedSearchParams?.page) || 1;
 
   const paramsArr = [
     category,
     type,
     material,
+    properties,
     max,
     min,
     indication,
+    properties
   ]
 
   const filteredProducts = await fetchFilteredProducts({
     category: makeArray(category),
     type: makeArray(type),
     material: makeArray(material),
+    properties: makeArray(properties),
     max: max,
     min: min,
     indication: makeArray(indication),
@@ -72,10 +66,25 @@ export default async function Catalog({
     limit: ITEMS_PER_PAGE,
   });
 
+  // used to "unlimit" the rows coming from the query, so the number
+  // of products being retrieved are right
+  const fetchedProductsUnlimited = await fetchFilteredProducts({
+    category: makeArray(category),
+    type: makeArray(type),
+    material: makeArray(material),
+    properties: makeArray(properties),
+    max: max,
+    min: min,
+    indication: makeArray(indication),
+    page: page,
+    limit: 100,
+  });
+
   // covering edge cases for when both categories
   // are selected or not selected at once
-  const categoryCondition = Array.isArray(category) ? undefined : category            
-  const productCount = await fetchProductCount(categoryCondition);
+  // const categoryCondition = Array.isArray(category) ? undefined : category            
+  // const productCount = await fetchProductCount(categoryCondition);
+  const productCount = fetchedProductsUnlimited.length
 
   // total pages based on how many items were fetched from the db
   const totalPages = Math.ceil(Number(productCount) / ITEMS_PER_PAGE);

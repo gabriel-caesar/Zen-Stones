@@ -65,3 +65,15 @@ export function uniqueId() {
   }
   return id.join(''); // turning the array into string
 }
+
+// turn the string params into an array of strings
+export function makeArray(value: string | string[] | undefined): string[] | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+  else if (Array.isArray(value)) {
+    return value
+  } else {
+    return Array(value) as string[]
+  }
+}

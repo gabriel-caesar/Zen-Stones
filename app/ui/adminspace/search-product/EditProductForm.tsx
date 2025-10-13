@@ -132,7 +132,7 @@ export default function EditProductForm({
   ) {
     if (state.length <= 0) return;
     const id = uniqueId();
-    const newObj = { name: state, id: id };
+    const newObj = { name: state.trim(), id: id };
 
     // prevent duplicates
     const isDuplicate = array.some(
@@ -351,7 +351,7 @@ export default function EditProductForm({
         <input
           value={productProperties}
           onChange={(e) => {
-            if (e.target.value.length <= 12) {
+            if (e.target.value.length <= 25) {
               setProductProperties(e.target.value);
             }
           }}
@@ -363,7 +363,7 @@ export default function EditProductForm({
                 setProductProperties,
                 arrayOfProperties,
                 setArrayOfProperties,
-                4,
+                10,
                 'properties'
               );
             }
@@ -373,7 +373,7 @@ export default function EditProductForm({
           name='properties-for-ui' // doesn't get captured on submission
           id='properties-input'
           aria-label='product-properties-input'
-          placeholder='Properties...'
+          placeholder='This product has...'
         />
 
         {arrayOfProperties.length > 0 && (
@@ -464,7 +464,7 @@ export default function EditProductForm({
                 setProductMaterials,
                 arrayOfMaterials,
                 setArrayOfMaterials,
-                6,
+                15,
                 'materials'
               );
             }
@@ -680,7 +680,7 @@ export default function EditProductForm({
                 setProductIndications,
                 arrayOfIndications,
                 setArrayOfIndications,
-                11,
+                15,
                 'indications'
               );
             }
