@@ -1,15 +1,19 @@
 import { ChevronDown } from 'lucide-react';
 import NavButton from './NavButton';
 import { useState } from 'react';
-import { SubCategory } from '@/app/types/types';
 import Link from 'next/link';
+import { productType } from '@/app/types/types';
 
 export default function Accordion({
   text,
   array,
+  openSidebarMenu,
+  setOpenSidebarMenu
 }: {
   text: string;
-  array: undefined | SubCategory[];
+  array: undefined | productType[];
+  openSidebarMenu?: boolean;
+  setOpenSidebarMenu?: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [openAccordion, setOpenAccordion] = useState<string>('');
 
@@ -44,19 +48,20 @@ export default function Accordion({
           `}
       >
         {array!.length > 0 ? (
-          array?.map((subc, index) => {
+          array?.map((type, index) => {
             return (
               <Link
                 key={index}
-                href={openAccordion !== text ? '#' : '/'}
+                href={openAccordion !== text ? '#' : `catalog?category=${text.toLowerCase()}&type=${type.product_type.toLowerCase()}`}
                 onClick={(e) => {
                   if (openAccordion !== text) e.preventDefault();
+                  setOpenSidebarMenu?.(!openSidebarMenu)
                 }}
                 className={`${
                   openAccordion !== text && 'pointer-events-none'
                 } rounded-lg px-2 py-1 w-full hover:cursor-pointer`}
               >
-                {subc.subcategory}
+                {type.product_type}
               </Link>
             );
           })
@@ -69,6 +74,20 @@ export default function Accordion({
           >
             No sub-categories found
           </p>
+        )}
+        {text === 'Jewelry' && (
+          <Link
+           href={'/catalog'}
+           className={`${
+              openAccordion !== text && 'pointer-events-none'
+            } rounded-lg px-2 py-1 w-full hover:cursor-pointer`}
+            onClick={(e) => {
+              if (openAccordion !== text) e.preventDefault();
+              setOpenSidebarMenu?.(!openSidebarMenu)
+            }}
+           >
+            Shop All
+          </Link>
         )}
       </div>
     </div>

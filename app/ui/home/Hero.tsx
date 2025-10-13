@@ -1,5 +1,6 @@
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { ImageSkeleton } from '../skeletons/ImageSkeleton';
+import Link from 'next/link';
 
 export default function Hero() {
   // compacted image objects for the Hero's grid
@@ -70,33 +71,36 @@ export default function Hero() {
           </div>
 
           <h1 className='text-4xl sm:text-5xl lg:text-6xl mb-6 leading-tight'>
-            Exquisite Gemstones
+            Exquisite Products
             <span className='block text-transparent bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 bg-clip-text'>
               For All Energies
             </span>
           </h1>
 
           <p className='text-lg sm:text-xl text-white/90 mb-8 max-w-2xl mx-auto'>
-            Discover our curated collection of the world's finest gemstones,
-            each stone carefully selected for its exceptional beauty and rarity.
+            Discover our curated collection of the world's finest jewelry, gemstones 
+            and metaphysical accessories. Each product carefully selected for its
+            exceptional beauty and energy.
           </p>
 
           <div className='flex flex-col sm:flex-row gap-4 justify-center items-center'>
-            <button
+            <Link
               id='explore-button'
               aria-label='explore-button'
               className='flex items-center justify-center bg-white text-black hover:bg-neutral-400 hover:cursor-pointer rounded-md py-2 px-4 transition-all'
+              href={'/catalog'}
             >
               Explore Collection
               <ArrowRight strokeWidth={2} size={16} className='ml-2 mt-1' />
-            </button>
-            <button
+            </Link>
+            <Link
               className='border-white bg-black border-1 text-white hover:bg-neutral-400 hover:text-black hover:cursor-pointer py-2 px-4 transition-all rounded-md'
               id='learn-more-button'
               aria-label='learn-more-button'
+              href={'/about'}
             >
               Learn More
-            </button>
+            </Link>
           </div>
         </div>
       </div>

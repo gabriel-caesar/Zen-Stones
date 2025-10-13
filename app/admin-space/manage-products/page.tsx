@@ -1,4 +1,4 @@
-import { fetchFilteredProducts } from '@/app/lib/data';
+import { fetchSearchedProducts } from '@/app/lib/data';
 import AddProductForm from '@/app/ui/adminspace/AddProductForm';
 import FeedbackDialog from '@/app/ui/adminspace/FeedbackDialog';
 import SearchProduct from '@/app/ui/adminspace/search-product/SearchProduct';
@@ -6,7 +6,9 @@ import MainQueryProduct from '@/app/ui/navbar/MainQueryProduct';
 
 export default async function ManageProducts(props: {
   searchParams?: Promise<{
+    deletion: string;
     product_added?: string;
+    product_edited?: string;
     mainquery?:string;
     query?: string;
     page?: string;
@@ -17,21 +19,31 @@ export default async function ManageProducts(props: {
   const query = searchParams?.query || '';
   const mainquery = searchParams?.mainquery || '';
   const currentPage = Number(searchParams?.page) || 1;
+  
+  const productAdded = searchParams?.product_added;
+  const productEdited = searchParams?.product_edited;
+  const productDeletion = searchParams?.deletion;
 
-  const products = await fetchFilteredProducts(query, currentPage);
-  const mainQueryProducts = await fetchFilteredProducts(mainquery, currentPage);
+  const products = await fetchSearchedProducts(query, currentPage);
+  const mainQueryProducts = await fetchSearchedProducts(mainquery, currentPage);
 
   return (
     <>
-      <MainQueryProduct products={mainQueryProducts} />
+      <MainQueryProduct products={mainQueryProducts} query={mainquery} />
       <div className='flex flex-col justify-center items-center lg:flex-row lg:items-start lg:mb-10 relative'>
-      <FeedbackDialog
-        text='Added product successfully'
-        params={searchParams?.product_added}
-      />
-      <SearchProduct products={products} />
-      <AddProductForm />
-    </div>
+        <FeedbackDialog
+          text={ 
+            productAdded 
+              ? 'Added product successfully' 
+              : productEdited
+                ? 'Edited product successfully'
+                : 'Deleted product successfully'
+          }
+          params={productAdded ? productAdded : productEdited ? productEdited : productDeletion}
+        />
+        <SearchProduct products={products} />
+        <AddProductForm />
+      </div>
     </>
   );
 }

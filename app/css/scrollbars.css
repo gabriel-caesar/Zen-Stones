@@ -1,3 +1,4 @@
+/* ###################################################################################################################### */
 #product-cards-container::-webkit-scrollbar {
   width: 8px;  
 }
@@ -21,6 +22,55 @@
   cursor: grabbing;
 }
 
+/* ###################################################################################################################### */
+#content-wrapper::-webkit-scrollbar {
+  width: 4px;  
+}
+
+#content-wrapper::-webkit-scrollbar-track {
+  background: #c9c9c9;
+  border-radius: 10px;
+}
+
+#content-wrapper::-webkit-scrollbar-thumb {
+  background-color: #6b6b6b;
+  border-radius: 10px;
+}
+
+#content-wrapper::-webkit-scrollbar-thumb:hover {
+  background-color: oklch(61.013% 0.12532 83.38);
+  cursor: grab;
+}
+
+#content-wrapper::-webkit-scrollbar-thumb:active {
+  cursor: grabbing;
+}
+
+/* ###################################################################################################################### */
+#filter-sidebar-wrapper::-webkit-scrollbar {
+  width: 4px;  
+}
+
+#filter-sidebar-wrapper::-webkit-scrollbar-track {
+  background: #c9c9c9;
+  border-radius: 10px;
+}
+
+#filter-sidebar-wrapper::-webkit-scrollbar-thumb {
+  background-color: #6b6b6b;
+  border-radius: 10px;
+}
+
+#filter-sidebar-wrapper::-webkit-scrollbar-thumb:hover {
+  background-color: oklch(61.013% 0.12532 83.38);
+  cursor: grab;
+}
+
+#filter-sidebar-wrapper::-webkit-scrollbar-thumb:active {
+  cursor: grabbing;
+}
+
+/* ###################################################################################################################### */
 #main-query-product-container::-webkit-scrollbar {
   width: 8px;  
 }

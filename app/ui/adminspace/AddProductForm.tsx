@@ -1,32 +1,45 @@
 'use client';
 
 import {
+  Atom,
+  Boxes,
   ChartBarIncreasingIcon,
   ChartColumnBig,
   CircleStar,
   DollarSign,
   FileBox,
   FolderPen,
-  Image,
   List,
   Loader2,
+  RulerDimensionLine,
+  Sparkles,
   Table,
   Weight,
   X,
+  Zap,
 } from 'lucide-react';
-import { useActionState, useEffect, useState } from 'react';
+import { SetStateAction, startTransition, useActionState, useEffect, useState } from 'react';
 import Select from '../Select';
-import { createProduct, uniqueId } from '@/app/lib/actions';
+import { createProduct } from '@/app/lib/actions';
 import InputImage from '../InputImage';
 import { useFormStatus } from 'react-dom';
 import { useRootContext } from '@/app/RootContext';
+import { uniqueId } from '@/app/lib/utils';
 
 export default function AddProductForm() {
   // form action
   const [state, addProductAction] = useActionState(createProduct, undefined);
 
+  // controllable form data
+  const formData = new FormData();
+
   // wiggle wrong input
   const [wiggle, setWiggle] = useState(false);
+
+   // array of images being uploaded
+  const [uploadedImageObjects, setUploadedImageObjects] = useState<File[] | []>(
+    []
+  );
 
   // selected category of the custom dropdown
   const [selectedCategory, setSelectCategory] = useState<string>('');
@@ -34,71 +47,106 @@ export default function AddProductForm() {
   // seleceted rarity of the custom dropdown
   const [selectedRarity, setSelectedRarity] = useState<string>('');
 
-  // select sub-category of the custom dropdown
-  const [selectedSubCategory, setSelectSubCategory] = useState<string>('');
+  // featured material for the product cards
+  const [featuredMaterial, setFeaturedMaterial] = useState<string>('');
+
+  // select product type of the custom dropdown
+  const [selectedType, setSelectedType] = useState<string>('');
+
+  // type for the errors
+  type InputError = {message: string, input: string}
 
   // error state to warn user of whatever error that pops up
-  const [inputError, setInputError] = useState<string>('');
+  const [inputError, setInputError] = useState<InputError | string>('');
 
   // states to persist user input
   const [productName, setProductName] = useState<string>('');
   const [productPrice, setProductPrice] = useState<string>('');
   const [productWeight, setProductWeight] = useState<string>('');
+  const [productSize, setProductSize] = useState<string>('');
   const [productDescription, setProductDescription] = useState<string>('');
+  const [productMeaning, setProductMeaning] = useState<string>('');
   const [productProperties, setProductProperties] = useState<string>('');
+  const [productMaterials, setProductMaterials] = useState<string>('');
+  const [productIndications, setProductIndications] = useState<string>('');
+
+  // for properties and materials input
+  type inputProps = { name: string; id: string };
 
   // will store all properties that user've inputed
-  const [arrayOfProperties, setArrayOfProperties] = useState<
-    { name: string; id: string }[]
-  >([]);
+  const [arrayOfProperties, setArrayOfProperties] = useState<inputProps[]>([]);
+
+  // will store all materials of a product
+  const [arrayOfMaterials, setArrayOfMaterials] = useState<inputProps[]>([]);
+
+  // will store all indications of a product
+  const [arrayOfIndications, setArrayOfIndications] = useState<inputProps[]>([]);
 
   // header categories for the custom dropdown
-  const categories = ['Jewelry', 'Metaphysical', 'Sterling Silver'];
-  const { subcategories } = useRootContext();
+  const categories = ['Jewelry', 'Metaphysical'];
+  const { productTypes } = useRootContext();
   const rarities = ['Common', 'Uncommon', 'Rare', 'Very Rare', 'Legendary'];
 
-  // getting all the subcategory names from the subcategories array of objects
-  const jewelrySubCategories = subcategories
+  // getting all the productType names from the productTypes array of objects
+  const jewelryProductType = productTypes
     ?.filter((obj) => obj.parent_category === 'Jewelry')
-    .map((obj) => obj.subcategory);
-  const metaphysicalSubCategories = subcategories
+    .map((obj) => obj.product_type);
+  const metaphysicalProductType = productTypes
     ?.filter((obj) => obj.parent_category === 'Metaphysical')
-    .map((obj) => obj.subcategory);
-  const sterlingSubCategories = subcategories
-    ?.filter((obj) => obj.parent_category === 'Sterling Silver')
-    .map((obj) => obj.subcategory);
+    .map((obj) => obj.product_type);
 
-  async function feedProperties() {
-    if (productProperties.length <= 0) return;
-    const id = await uniqueId();
-    const newObj = { name: productProperties, id: id };
+  function feedProperties(
+    state: string,
+    setState: React.Dispatch<SetStateAction<string>>,
+    array: inputProps[],
+    setArray: React.Dispatch<SetStateAction<inputProps[]>>,
+    max: number,
+    inputName: string,
+  ) {
+    if (state.length <= 0) return;
+    const id = uniqueId();
+    const newObj = { name: state, id: id };
 
     // prevent duplicates
-    const isDuplicate = arrayOfProperties.some(
-      (p) => p.name.toLowerCase() === productProperties.toLowerCase()
+    const isDuplicate = array.some(
+      (p) => p.name.toLowerCase() === state.toLowerCase()
     );
 
     // prevents overflow
-    const maxProps = arrayOfProperties.length === 4;
+    const maxProps = array.length === max;
 
     if (isDuplicate) {
-      setInputError('Cannot have duplicate properties');
+      setInputError({
+        message: `Cannot have duplicate ${inputName}`,
+        input: inputName,
+      });
       return;
     } else if (maxProps) {
-      setInputError('Max number of properties reached');
+      setInputError(
+        {
+        message: `Max number of ${inputName} reached`,
+        input: inputName,
+      }
+      );
       return;
     }
 
-    setArrayOfProperties((prev) => [...prev, newObj]);
-    setProductProperties('');
+    setArray((prev) => [...prev, newObj]);
+    setState('');
 
     // if duplicate error is not empty
     if (inputError !== '') setInputError('');
   }
 
+  // when category changes, type is cleared
   useEffect(() => {
-    setSelectSubCategory('Choose one option...')
-  }, [selectedCategory])
+    setSelectedType('Choose one option...');
+  }, [selectedCategory]);
+
+  // if a material is added, featured material clears
+  useEffect(() => {
+    setFeaturedMaterial('Choose one option...');
+  }, [arrayOfMaterials]);
 
   useEffect(() => {
     if (state?.errors) {
@@ -109,8 +157,36 @@ export default function AddProductForm() {
 
   return (
     <form
-      // onSubmit={(e) => e.preventDefault()}
-      action={addProductAction}
+      onSubmit={async (e) => {
+        // submitting the formData manually to have
+        // control over the product image positionings
+        e.preventDefault();
+
+        // appending the image file objects to the form data
+        uploadedImageObjects.forEach(file => {
+          formData.append('productPhoto', file)
+        })
+
+        formData.append('name', productName);
+        formData.append('price', productPrice);
+        formData.append('weight', productWeight);
+        formData.append('size', productSize);
+        formData.append('description', productDescription);
+        formData.append('meaning', productMeaning);
+        formData.append('featured_material', featuredMaterial);
+        formData.append('productType', selectedType);
+        formData.append('rarity', selectedRarity);
+        formData.append('category', selectedCategory);
+        arrayOfProperties.forEach(p => formData.append('properties', p.name))
+        arrayOfMaterials.forEach(p => formData.append('materials', p.name))
+        arrayOfIndications.forEach(p => formData.append('indications', p.name))
+
+         // we need this function to tell React “this is a low-priority async update”
+        startTransition(() => {
+          addProductAction(formData);
+        });
+        
+      }}
       className='rounded-lg shadow-xl p-2 bg-neutral-200 md:w-1/2 lg:w-2/5 w-11/12 my-10 relative lg:ml-10'
     >
       <h1 className='flex font-bold lg:text-lg mb-8'>
@@ -118,7 +194,12 @@ export default function AddProductForm() {
         Add product
       </h1>
 
-      <InputImage state={state} name={'productPhoto'} />
+      <InputImage 
+        state={state}
+        name={'productPhoto'} 
+        uploadedImageObjects={uploadedImageObjects}
+        setUploadedImageObjects={setUploadedImageObjects}
+      />
 
       <section id='name-section' className='w-full mt-6'>
         <label htmlFor='name-input' className='flex mb-1 ml-1'>
@@ -174,34 +255,34 @@ export default function AddProductForm() {
         )}
       </section>
 
-      <section id='subcategory-section' className='w-full mt-6'>
-        <label htmlFor='subcategory-selection' className='flex mb-1 ml-1'>
+      <section id='productType-section' className='w-full mt-6'>
+        <label htmlFor='productType-selection' className='flex mb-1 ml-1'>
           <ChartBarIncreasingIcon strokeWidth={1.5} className='mr-2' />
-          Sub-category
+          Product type
         </label>
         <Select
           options={
             selectedCategory === 'Jewelry'
-              ? jewelrySubCategories
+              ? jewelryProductType
               : selectedCategory === 'Metaphysical'
-              ? metaphysicalSubCategories
-              : sterlingSubCategories
+              ? metaphysicalProductType
+              : []
           }
-          selector={selectedSubCategory}
-          setSelector={setSelectSubCategory}
-          id='subcategory-selection'
-          ariaLabel='subcategory-selection'
-          name='subcategory'
+          selector={selectedType}
+          setSelector={setSelectedType}
+          id='productType-selection'
+          ariaLabel='productType-selection'
+          name='productType'
         />
-        {state?.errors?.subcategory && (
+        {state?.errors?.productType && (
           <p
             className={`bg-red-500 rounded-lg w-full text-center px-2 py-2 text-white mt-2 ${
               wiggle ? 'wiggle-input' : ''
             }`}
-            id='subcategory-error-text'
-            aria-label='subcategory-error-text'
+            id='productType-error-text'
+            aria-label='productType-error-text'
           >
-            {state.errors.subcategory}
+            {state.errors.productType}
           </p>
         )}
       </section>
@@ -249,7 +330,14 @@ export default function AddProductForm() {
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               e.preventDefault();
-              feedProperties();
+              feedProperties(
+                productProperties,
+                setProductProperties,
+                arrayOfProperties,
+                setArrayOfProperties,
+                4,
+                'properties'
+              );
             }
           }}
           type='text'
@@ -303,13 +391,13 @@ export default function AddProductForm() {
           </>
         )}
 
-        {inputError !== '' && (
+        {(inputError as InputError).input === 'properties' && (
           <p
             className={`bg-red-500 rounded-lg w-full text-center px-2 py-2 text-white mt-2 ${
               wiggle ? 'wiggle-input' : ''
             }`}
           >
-            {inputError}
+            {(inputError as InputError).message}
           </p>
         )}
 
@@ -326,6 +414,105 @@ export default function AddProductForm() {
         )}
       </section>
 
+      <section id='materials-section' className='w-full mt-6'>
+        <label htmlFor='materials-input' className='flex mb-1 ml-1'>
+          <Zap strokeWidth={1.5} className='mr-2' />
+          Materials
+        </label>
+        <input
+          value={productMaterials}
+          onChange={(e) => {
+            if (e.target.value.length <= 15) {
+              setProductMaterials(e.target.value);
+            }
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              feedProperties(
+                productMaterials,
+                setProductMaterials,
+                arrayOfMaterials,
+                setArrayOfMaterials,
+                6,
+                'materials'
+              );
+            }
+          }}
+          type='text'
+          className='rounded-lg bg-neutral-300 p-2 w-full focus-within:outline-none search-focus transition-all'
+          name='materials-for-ui' // doesn't get captured on submission
+          id='materials-input'
+          aria-label='product-materials-input'
+          placeholder='Materials...'
+        />
+
+        {arrayOfMaterials.length > 0 && (
+          <>
+            <div className='flex flex-wrap p-1 rounded-lg border-1 shadow-lg border-neutral-500 mt-2'>
+              {arrayOfMaterials.map((prop) => {
+                return (
+                  <span
+                    key={prop.id}
+                    className='flex shadow-lg justify-between items-center rounded-lg py-1 px-2 bg-neutral-300 mr-2 mb-2'
+                  >
+                    <p>{prop.name}</p>
+                    <button
+                      type='button'
+                      onClick={() => {
+                        const updatedProps = arrayOfMaterials.filter(
+                          (x) => x.id !== prop.id
+                        );
+                        setArrayOfMaterials(updatedProps);
+                      }}
+                      className='bg-neutral-700 text-white rounded-full p-1 ml-2 hover:cursor-pointer hover:bg-black transition-all'
+                    >
+                      <X size={14} />
+                    </button>
+                  </span>
+                );
+              })}
+            </div>
+
+            {/* creating ghost inputs with the same name attribute so formData store them as string[] */}
+            {arrayOfMaterials.map((prop) => {
+              return (
+                <input
+                  key={prop.id}
+                  type='text'
+                  defaultValue={prop.name}
+                  name='materials'
+                  id={`${prop.name}-hidden-input`}
+                  className='hidden'
+                />
+              );
+            })}
+          </>
+        )}
+
+        {(inputError as InputError).input === 'materials' && (
+          <p
+            className={`bg-red-500 rounded-lg w-full text-center px-2 py-2 text-white mt-2 ${
+              wiggle ? 'wiggle-input' : ''
+            }`}
+          >
+            {(inputError as InputError).message}
+          </p>
+        )}
+
+        {state?.errors?.materials && (
+          <p
+            className={`bg-red-500 rounded-lg w-full text-center px-2 py-2 text-white mt-2 ${
+              wiggle ? 'wiggle-input' : ''
+            }`}
+            id='materials-error-text'
+            aria-label='materials-error-text'
+          >
+            {state.errors.materials}
+          </p>
+        )}
+      </section>
+
       <section id='rarity-section' className='w-full mt-6'>
         <label htmlFor='rarity-selection' className='flex mb-1 ml-1'>
           <CircleStar strokeWidth={1.5} className='mr-2' />
@@ -338,6 +525,7 @@ export default function AddProductForm() {
           id='rarity-selection'
           ariaLabel='rarity-selection'
           name='rarity'
+          raritySelect={true}
         />
         {state?.errors?.rarity && (
           <p
@@ -348,6 +536,61 @@ export default function AddProductForm() {
             aria-label='rarity-error-text'
           >
             {state.errors.rarity}
+          </p>
+        )}
+      </section>
+
+      <section id='featured-material-section' className='w-full mt-6'>
+        <label htmlFor='featured-material-selection' className='flex mb-1 ml-1'>
+          <Boxes strokeWidth={1.5} className='mr-2' />
+          Featured material
+        </label>
+        <Select
+          options={arrayOfMaterials.map(el => el.name)}
+          selector={featuredMaterial}
+          setSelector={setFeaturedMaterial}
+          id='featured-material-selection'
+          ariaLabel='featured-material-selection'
+          name='featured_material'
+        />
+        {state?.errors?.featured_material && (
+          <p
+            className={`bg-red-500 rounded-lg w-full text-center px-2 py-2 text-white mt-2 ${
+              wiggle ? 'wiggle-input' : ''
+            }`}
+            id='featured-material-error-text'
+            aria-label='featured-material-error-text'
+          >
+            {state.errors.featured_material}
+          </p>
+        )}
+      </section>
+
+      <section id='size-section' className='w-full mt-6'>
+        <label htmlFor='size-input' className='flex mb-1 ml-1'>
+          <RulerDimensionLine strokeWidth={1.5} className='mr-2' />
+          Size
+        </label>
+        <input
+          value={productSize}
+          onChange={(e) => setProductSize(e.target.value)}
+          type='text'
+          className='rounded-lg bg-neutral-300 p-2 w-full focus-within:outline-none search-focus transition-all'
+          name='size'
+          id='size-input'
+          aria-label='product-size-input'
+          placeholder='8mm...'
+        />
+        {state?.errors?.size && (
+          <p
+            className={`
+              ${wiggle ? 'wiggle-input' : ''}
+              bg-red-500 rounded-lg w-full text-center px-2 py-2 text-white mt-2 
+            `}
+            id='size-error-text'
+            aria-label='size-error-text'
+          >
+            {state.errors.size}
           </p>
         )}
       </section>
@@ -369,13 +612,113 @@ export default function AddProductForm() {
         />
         {state?.errors?.weight && (
           <p
-            className={`bg-red-500 rounded-lg w-full text-center px-2 py-2 text-white mt-2 ${
-              wiggle ? 'wiggle-input' : ''
-            }`}
+            className={`
+              ${wiggle ? 'wiggle-input' : ''}
+              bg-red-500 rounded-lg w-full text-center px-2 py-2 text-white mt-2 
+            `}
             id='weight-error-text'
             aria-label='weight-error-text'
           >
             {state.errors.weight}
+          </p>
+        )}
+      </section>
+
+      <section id='indications-section' className='w-full mt-6'>
+        <label htmlFor='indications-input' className='flex mb-1 ml-1'>
+          <Atom strokeWidth={1.5} className='mr-2' />
+          Indicated for
+        </label>
+        <input
+          value={productIndications}
+          onChange={(e) => {
+            if (e.target.value.length <= 25) {
+              setProductIndications(e.target.value);
+            }
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              feedProperties(
+                productIndications,
+                setProductIndications,
+                arrayOfIndications,
+                setArrayOfIndications,
+                11,
+                'indications'
+              );
+            }
+          }}
+          type='text'
+          className='rounded-lg bg-neutral-300 p-2 w-full focus-within:outline-none search-focus transition-all'
+          name='indications-for-ui' // doesn't get captured on submission
+          id='indications-input'
+          aria-label='product-indications-input'
+          placeholder='Indications...'
+        />
+
+        {arrayOfIndications.length > 0 && (
+          <>
+            <div className='flex flex-wrap p-1 rounded-lg border-1 shadow-lg border-neutral-500 mt-2'>
+              {arrayOfIndications.map((prop) => {
+                return (
+                  <span
+                    key={prop.id}
+                    className='flex shadow-lg justify-between items-center rounded-lg py-1 px-2 bg-neutral-300 mr-2 mb-2'
+                  >
+                    <p>{prop.name}</p>
+                    <button
+                      type='button'
+                      onClick={() => {
+                        const updatedProps = arrayOfIndications.filter(
+                          (x) => x.id !== prop.id
+                        );
+                        setArrayOfIndications(updatedProps);
+                      }}
+                      className='bg-neutral-700 text-white rounded-full p-1 ml-2 hover:cursor-pointer hover:bg-black transition-all'
+                    >
+                      <X size={14} />
+                    </button>
+                  </span>
+                );
+              })}
+            </div>
+
+            {/* creating ghost inputs with the same name attribute so formData store them as string[] */}
+            {arrayOfIndications.map((prop) => {
+              return (
+                <input
+                  key={prop.id}
+                  type='text'
+                  defaultValue={prop.name}
+                  name='indications'
+                  id={`${prop.name}-hidden-input`}
+                  className='hidden'
+                />
+              );
+            })}
+          </>
+        )}
+
+        {(inputError as InputError).input === 'indications' && (
+          <p
+            className={`bg-red-500 rounded-lg w-full text-center px-2 py-2 text-white mt-2 ${
+              wiggle ? 'wiggle-input' : ''
+            }`}
+          >
+            {(inputError as InputError).message}
+          </p>
+        )}
+
+        {state?.errors?.indications && (
+          <p
+            className={`bg-red-500 rounded-lg w-full text-center px-2 py-2 text-white mt-2 ${
+              wiggle ? 'wiggle-input' : ''
+            }`}
+            id='indications-error-text'
+            aria-label='indications-error-text'
+          >
+            {state.errors.indications}
           </p>
         )}
       </section>
@@ -408,6 +751,34 @@ export default function AddProductForm() {
         )}
       </section>
 
+      <section id='meaning-section' className='w-full mt-6'>
+        <label htmlFor='meaning-input' className='flex mb-1 ml-1'>
+          <Sparkles strokeWidth={1.5} className='mr-2' />
+          Meaning
+        </label>
+        <textarea
+          value={productMeaning}
+          onChange={(e) => setProductMeaning(e.target.value)}
+          className='rounded-lg bg-neutral-300 p-2 w-full focus-within:outline-none search-focus transition-all resize-none'
+          name='meaning'
+          id='meaning-input'
+          aria-label='product-meaning-input'
+          placeholder='Meaning...'
+          rows={4}
+        />
+        {state?.errors?.meaning && (
+          <p
+            className={`bg-red-500 rounded-lg w-full text-center px-2 py-2 text-white mt-2 ${
+              wiggle ? 'wiggle-input' : ''
+            }`}
+            id='meaning-error-text'
+            aria-label='meaning-error-text'
+          >
+            {state.errors.meaning}
+          </p>
+        )}
+      </section>
+
       <SubmitButton />
     </form>
   );
@@ -430,8 +801,7 @@ function SubmitButton() {
         }
       `}
     >
-      Create
-      {pending && <Loader2 strokeWidth={1.5} className='loading ml-2' />}
+      {pending ? <>Creating <Loader2 strokeWidth={1.5} className='loading ml-2' /></> : 'Create'}
     </button>
   );
 }

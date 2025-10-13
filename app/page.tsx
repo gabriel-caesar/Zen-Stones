@@ -1,8 +1,8 @@
 'use server'
 
-import { fetchFilteredProducts } from './lib/data';
+import { fetchFeaturedProducts, fetchSearchedProducts } from './lib/data';
 import { FeaturedSection } from './ui/home/FeaturedSection';
-import { GemstoneGallery } from './ui/home/GemstoneGallery';
+import { FeaturedGallery } from './ui/home/FeaturedGallery';
 import { gemstones } from './data/dummy-gemstones';
 import MainQueryProduct from './ui/navbar/MainQueryProduct';
 import Hero from './ui/home/Hero';
@@ -18,19 +18,16 @@ export default async function Home(props: {
   const mainquery = searchParams?.mainquery || '';
   const currentPage = Number(searchParams?.page) || 1;
 
-  const products = await fetchFilteredProducts(mainquery, currentPage);
+  const products = await fetchSearchedProducts(mainquery, currentPage);
 
-  // Get featured gemstones (legendary and very rare)
-  const featuredGemstones = gemstones.filter(gem => 
-    gem.rarity === 'Legendary' || gem.rarity === 'Very Rare'
-  );
+  const featuredProducts = await fetchFeaturedProducts();
 
   return (
     <div className='relative'>
-      <MainQueryProduct products={products} />
+      <MainQueryProduct products={products} query={mainquery} />
       <Hero />
-      <FeaturedSection featuredGemstones={featuredGemstones} />
-      <GemstoneGallery gemstones={gemstones} />
+      <FeaturedSection featuredProducts={featuredProducts} />
+      <FeaturedGallery gemstones={gemstones} />
     </div>
   )
 }

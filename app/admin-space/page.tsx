@@ -1,9 +1,9 @@
 'use server'
 
-import { Box, FileBox } from 'lucide-react';
+import { Box, FileBadge, FileBox, Loader2 } from 'lucide-react';
 import CardOption from '../ui/adminspace/CardOption';
 import MainQueryProduct from '../ui/navbar/MainQueryProduct';
-import { fetchFilteredProducts } from '../lib/data';
+import { fetchSearchedProducts } from '../lib/data';
 
 export default async function AdminSpace(props: {
   searchParams: Promise<{
@@ -16,11 +16,11 @@ export default async function AdminSpace(props: {
   const mainquery = searchParams?.mainquery || '';
   const currentPage = Number(searchParams?.page) || 1;
 
-  const products = await fetchFilteredProducts(mainquery, currentPage);
+  const products = await fetchSearchedProducts(mainquery, currentPage);
 
   return (
     <>
-      <MainQueryProduct products={products} />
+      <MainQueryProduct products={products} query={mainquery} />
       <div
         className='flex flex-col justify-center items-center'
         id='adminspace-wrapper'
@@ -34,10 +34,12 @@ export default async function AdminSpace(props: {
         </h1>
         <div
           id='card-options-wrapper'
-          className='grid lg:grid-cols-2 lg:gap-0 gap-8 place-items-center w-full h-full mb-10'
+          className='grid lg:grid-cols-2 gap-8 place-items-center w-full h-full mb-10'
         >
-          <CardOption href='/admin-space/manage-subcategories' Icon={Box} text='Manage Sub-categories'/>
+          <CardOption href='/admin-space/manage-types' Icon={Box} text='Manage Types'/>
           <CardOption href='/admin-space/manage-products' Icon={FileBox} text='Manage Products'/>
+          <CardOption href='/admin-space/manage-main-page' Icon={FileBadge} text='Manage Main Page'/>
+          <CardOption href='#' Icon={Loader2} text='To Be Launched...'/>
         </div>
       </div>
     </>

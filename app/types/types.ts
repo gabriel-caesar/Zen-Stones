@@ -2,12 +2,14 @@ import { SetStateAction } from 'react';
 
 export type RootContextType = {
   session: SessionPayload | undefined;
-  subcategories: SubCategory[];
+  productTypes: productType[];
 }
 
 export type WrapperContextType = {
   searchFocus: boolean,
   setSearchFocus: React.Dispatch<SetStateAction<boolean>>
+  openSearchForm: boolean,
+  setOpenSearchForm: React.Dispatch<SetStateAction<boolean>>,
 }
 
 export type User = {
@@ -25,18 +27,24 @@ export type SessionPayload = {
   expiresAt: Date;
 };
 
-export type Category = 'Jewelry' | 'Metaphysical' | 'Sterling Silver'
+export type Category = 'Jewelry' | 'Metaphysical'
 
 export type Product = {
   id: string;
   name: string;
   category: Category;
-  subcategory: string;
+  product_type: string;
   price: number;
+  material: string[];
   properties: string[];
+  indicated_for: string[];
   description: string;
   rarity: 'Common' | 'Uncommon' | 'Rare' | 'Very Rare' | 'Legendary';
-  weight: number;
+  weight: string;
+  meaning: string;
+  size: string;
+  featured_material: string;
+  featured_section: boolean;
 }
 
 export type ProductWithImages = Product & {
@@ -51,10 +59,30 @@ export type ProductImage = {
   created_at: string;
 }
 
-export type SubCategory = {
+export type productType = {
   id: string;
-  subcategory: string;
+  product_type: string;
   parent_category: Category;
   featured_image: string;
+  featured_section: boolean;
 }
 
+// name of the uploaded files
+export type fileCopy = {
+  url: string;
+  name: string;
+  folder: string;
+}
+
+// 'mimic' of a type file for editing a product
+export type FileMimicType = {
+  name: string,
+  url: string,
+  type: string,
+}
+
+// tells how many times 'name' was repeated
+export type FrequencyArray = {
+  name: string,
+  count: number,
+}

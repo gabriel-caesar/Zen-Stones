@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { S3Client } from '@aws-sdk/client-s3';
 import { uploadFileToS3 } from '@/app/lib/actions';
+import { fileCopy } from '@/app/types/types';
 
 if (!process.env.AWS_S3_REGION || 
     !process.env.AWS_S3_ACCESS_KEY_ID || 
@@ -26,11 +27,6 @@ export async function POST(request: Request, { params }: { params: Promise<{ nam
     // getting the input value with name === product-photo
     const files = formData.getAll(name) as File[];
 
-    // name of the uploaded files
-    type fileCopy = {
-      url: string;
-      name: string;
-    }
     const uploadedFiles: fileCopy[] = [];
 
     // checking if file exists and also if it is a File type
@@ -55,7 +51,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ nam
 
       uploadedFiles.push({
         url: fileUrl,
-        name: fileName
+        name: fileName,
+        folder: folderName
       })
     }
     

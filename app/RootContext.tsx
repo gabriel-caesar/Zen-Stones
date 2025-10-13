@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext } from 'react';
 import { RootContextType } from './types/types';
 
 export const RootContextWrapper = createContext<RootContextType | null>(null);

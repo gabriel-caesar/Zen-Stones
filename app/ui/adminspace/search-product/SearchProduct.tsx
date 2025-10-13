@@ -1,11 +1,9 @@
 'use client'
 
-import ProductCardSkeleton from '../../skeletons/ProductCardSkeleton';
 import SearchBarAdmin from './SearchBarAdmin';
 import EditOrDeleteProductCard from './EditOrDeleteProductCard';
 import { ProductWithImages } from '@/app/types/types';
 import { PackageSearch } from 'lucide-react';
-import { Suspense } from 'react';
 
 export default function SearchProduct({
   products
@@ -24,12 +22,10 @@ export default function SearchProduct({
       </div>
       
       <div 
-        className='flex flex-col gap-2 max-h-125 lg:max-h-230 pr-2 overflow-y-auto'
+        className='flex flex-col items-center justify-start gap-2 max-h-230 pr-2 overflow-y-auto'
         id='product-cards-container'
       >
-        <Suspense fallback={<ProductCardSkeleton />}>
-          <EditOrDeleteProductCard products={products} />
-        </Suspense>
+        <EditOrDeleteProductCard products={products} />
       </div>
     </div>
   );

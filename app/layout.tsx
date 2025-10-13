@@ -1,4 +1,4 @@
-import { getSubcategories } from './lib/actions';
+import { getTypes } from './lib/actions';
 import type { Metadata } from "next";
 import { cookies } from 'next/headers';
 import { decrypt } from './lib/session';
@@ -6,7 +6,6 @@ import { RootContextProvider } from './RootContext';
 import LayoutWrapper from './ui/LayoutWrapper';
 import './css/scrollbars.css';
 import './css/globals.css';
-import { fetchFilteredProducts } from './lib/data';
 
 export const metadata: Metadata = {
   title: "Zen Stones",
@@ -30,11 +29,11 @@ export default async function RootLayout({
 
   const session = await getSession();
 
-  const subcategories = await getSubcategories();
+  const productTypes = await getTypes();
 
   const providedValues = {
     session,
-    subcategories
+    productTypes
   }
 
   return (

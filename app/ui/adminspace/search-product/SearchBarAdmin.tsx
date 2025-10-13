@@ -2,6 +2,7 @@
 
 import { Search } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useDebouncedCallback } from 'use-debounce';
 
 export default function SearchBarAdmin() {
 
@@ -9,7 +10,7 @@ export default function SearchBarAdmin() {
   const pathname = usePathname(); // current path (/admin-space/manage-products)
   const { replace } = useRouter(); // url replacer
 
-  function handleSearch(term: string) {
+  const handleSearch = useDebouncedCallback((term: string) => {
 
     const params = new URLSearchParams(searchParams)
 
@@ -22,7 +23,7 @@ export default function SearchBarAdmin() {
 
     // updating the url translating params into a readable string
     replace(`${pathname}?${params.toString()}`);
-  }
+  }, 300)
 
   return (
     <form 

@@ -13,7 +13,7 @@ interface GemstoneGalleryProps {
   gemstones: Gemstone[];
 }
 
-export function GemstoneGallery({ gemstones }: GemstoneGalleryProps) {
+export function FeaturedGallery({ gemstones }: GemstoneGalleryProps) {
   const [activeCategory, setActiveCategory] = useState<GemstoneCategory>('All');
   const [searchTerm, setSearchTerm] = useState('');
   type sortOption = 'name' | 'price' | 'rarity';
@@ -90,11 +90,11 @@ export function GemstoneGallery({ gemstones }: GemstoneGalleryProps) {
       <div className='max-w-7xl mx-auto'>
         {/* Header */}
         <div className='text-center mb-12'>
-          <h2 className='text-3xl sm:text-4xl mb-4'>Our Gemstone Collection</h2>
+          <h2 className='text-3xl sm:text-4xl mb-4'>Our Sterling Silver Collection</h2>
           <p className='text-muted-foreground max-w-2xl mx-auto'>
-            Explore our carefully curated selection of premium gemstones from
-            around the world, each piece authenticated and graded by certified
-            gemologists.
+            Discover our exclusive range of handcrafted sterling silver jewelry,
+            designed with precision and elegance. Each piece reflects timeless 
+            craftsmanship and the unmatched quality of genuine sterling silver.
           </p>
         </div>
 

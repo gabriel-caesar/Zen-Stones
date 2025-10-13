@@ -2,6 +2,7 @@
 
 import { ChevronDown } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { getRarityColor } from '../lib/utils';
 
 export default function Select({
   options,
@@ -11,6 +12,8 @@ export default function Select({
   id,
   ariaLabel,
   name,
+  raritySelect,
+  isEditing,
 }: {
   options: string[] | undefined;
   selector: string;
@@ -19,12 +22,16 @@ export default function Select({
   id?: string;
   ariaLabel?: string;
   name: string;
+  raritySelect?: boolean;
+  isEditing?: boolean;
 }) {
   const [openDropdown, setOpenDropdown] = useState<boolean>(false);
 
   useEffect(() => {
     if (options) {
-      setSelector(options[0]); // selector will always be the first option of the dropdown
+      if (!isEditing) {
+        setSelector(options[0]); // selector will always be the first option of the dropdown
+      }
     }
   }, []);
 
@@ -32,8 +39,8 @@ export default function Select({
     <div
       onClick={() => setOpenDropdown(!openDropdown)}
       className={`
-        ${openDropdown && 'shadow-regular'}
-        flex w-full justify-between items-center hover:cursor-pointer rounded-lg bg-neutral-300 p-2 relative transition-all ${className}
+        ${openDropdown && 'shadow-regular'} ${className} ${raritySelect && getRarityColor(selector)}
+        flex justify-between items-center hover:cursor-pointer rounded-lg bg-neutral-300 p-2 relative transition-all 
       `}
       id={id ? id : 'container-wrapper'}
       aria-label={ariaLabel ? ariaLabel : 'container-wrapper'}
@@ -62,10 +69,17 @@ export default function Select({
                 role="option"
                 aria-selected={selector === opt}
                 data-value={opt}
-                className="hover:cursor-pointer hover:bg-white hover:border-black rounded-lg py-1 px-3 border border-transparent transition-all"
+                className={`
+                  hover:cursor-pointer hover:bg-white hover:border-black rounded-lg py-1 px-3 border border-transparent transition-all ${raritySelect && 'flex justify-between items-center'}
+                `}
                 onClick={() => setSelector(opt)}
               >
                 {opt}
+                {raritySelect && (
+                  <div
+                    className={`w-8 h-8 rounded-lg ${getRarityColor(opt)}`}
+                  />
+                )}
               </li>
             ))
           ) : (

@@ -8,7 +8,7 @@ import {
   X,
 } from 'lucide-react';
 import { FaFacebook, FaInstagram } from 'react-icons/fa';
-import { SessionPayload, SubCategory } from '@/app/types/types';
+import { productType, SessionPayload } from '@/app/types/types';
 import { logout } from '@/app/lib/actions';
 import NavButton from './NavButton';
 import Link from 'next/link';
@@ -24,7 +24,7 @@ export default function Sidebar({
   setSearchFocus,
   sideBarRef,
   session,
-  subcategories,
+  productTypes,
 }: {
   openSidebarMenu: boolean;
   setOpenSidebarMenu: React.Dispatch<React.SetStateAction<boolean>>;
@@ -34,13 +34,12 @@ export default function Sidebar({
   setSearchFocus: React.Dispatch<React.SetStateAction<boolean>>;
   sideBarRef: React.RefObject<HTMLDivElement | null>;
   session: SessionPayload | undefined;
-  subcategories: SubCategory[] | undefined;
+  productTypes: productType[] | undefined;
 }) {
 
   // filtering subcategories
-  const jewelrySubCategories = subcategories?.filter(subc => subc.parent_category === 'Jewelry');
-  const metaphysicalSubCategories = subcategories?.filter(subc => subc.parent_category === 'Metaphysical');
-  const sterlingSubCategories = subcategories?.filter(subc => subc.parent_category === 'Sterling Silver');
+  const jewelryProductTypes = productTypes?.filter(type => type.parent_category === 'Jewelry');
+  const metaphysicalProductTypes = productTypes?.filter(type => type.parent_category === 'Metaphysical');
 
   // only when in mobile, clean navbar to focus only searchbar
   useEffect(() => {
@@ -62,8 +61,8 @@ export default function Sidebar({
     <nav
       className={`
         ${openSidebarMenu ? 'translate-x-0 opacity-100' : 'translate-x-full'}
-        fixed top-0 right-0 h-screen w-60 bg-neutral-300 p-3 transition-all
-        lg:hidden z-4
+        fixed top-0 right-0 h-screen w-60 bg-yellow-100 border-l-1 p-3 transition-all
+        lg:hidden z-4 overflow-y-auto
       `}
       ref={sideBarRef}
       id='sidebar-menu'
@@ -99,13 +98,37 @@ export default function Sidebar({
         className='flex flex-col items-start justify-around w-full md:mt-10'
       >
 
-        <Accordion text='Jewelry' array={jewelrySubCategories} />
+        <Accordion 
+          text='Jewelry'
+          array={jewelryProductTypes} 
+          openSidebarMenu={openSidebarMenu}
+          setOpenSidebarMenu={setOpenSidebarMenu}
+        />
 
-        <Accordion text='Metaphysical' array={metaphysicalSubCategories} />
+        <Accordion 
+          text='Metaphysical'
+          array={metaphysicalProductTypes} 
+          openSidebarMenu={openSidebarMenu}
+          setOpenSidebarMenu={setOpenSidebarMenu}
+        />
 
-        <Accordion text='Sterling Silver' array={sterlingSubCategories} />
+        <NavButton 
+          className='mt-3 w-full flex justify-between items-center active:bg-neutral-400 transition-all' 
+          isLink={true} 
+          href={'/catalog'} 
+          openSidebarMenu={openSidebarMenu}
+          setOpenSidebarMenu={setOpenSidebarMenu}
+        >
+          Shop All
+        </NavButton>
 
-        <NavButton className='mt-3 w-full flex justify-between items-center'>
+        <NavButton
+          className='mt-3 w-full flex justify-between items-center'
+          isLink={true}
+          href={'/about'}
+          openSidebarMenu={openSidebarMenu}
+          setOpenSidebarMenu={setOpenSidebarMenu}
+        >
           About
         </NavButton>
 
@@ -114,7 +137,7 @@ export default function Sidebar({
       <span
         id='social-media-container'
         aria-label='social-media-container'
-        className='flex flex-col w-full justify-between items-start text-4xl h-1/6 mt-10'
+        className='flex flex-col w-full justify-between items-start text-4xl h-[94px] mt-10'
       >
         <a
           href={'https://www.instagram.com/zenstonesjewelry/?hl=en'}
