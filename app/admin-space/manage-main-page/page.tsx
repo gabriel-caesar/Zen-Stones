@@ -1,15 +1,14 @@
 'use server';
 
 import {
+  fetchCollectionProducts,
   fetchFeaturedProducts,
-  fetchFeaturedType,
   fetchSearchedProducts,
-  fetchTypes,
 } from '@/app/lib/data';
 import FeedbackDialog from '@/app/ui/adminspace/FeedbackDialog';
 import FeaturedProducts from '@/app/ui/manage-main-page/FeaturedProducts';
 import FeaturedSearch from '@/app/ui/manage-main-page/FeaturedSearch';
-import FeaturedType from '@/app/ui/manage-main-page/FeaturedType';
+import FeaturedCollection from '@/app/ui/manage-main-page/FeaturedCollection';
 import MainQueryProduct from '@/app/ui/navbar/MainQueryProduct';
 
 export default async function ManageMainPage(props: {
@@ -20,6 +19,8 @@ export default async function ManageMainPage(props: {
     unfeature?: string;
     type_featured?: string;
     mainquery?: string;
+    added_collection?: string;
+    removed_collection?: string;
   }>;
 }) {
   const searchParams = await props.searchParams;
@@ -29,10 +30,13 @@ export default async function ManageMainPage(props: {
   const feature = searchParams?.feature;
   const unfeature = searchParams?.unfeature;
   const type_featured = searchParams?.type_featured;
+  const added_collection = searchParams?.added_collection;
+  const removed_collection = searchParams?.removed_collection;
 
+  // fetching all required products for the children components
   const products = await fetchSearchedProducts(query, currentPage);
   const featuredProducts = await fetchFeaturedProducts();
-  const types = await fetchFeaturedType();
+  const collectionProducts = await fetchCollectionProducts();
 
   // making the search bar work
   const mainQueryProducts = await fetchSearchedProducts(mainquery, currentPage);
@@ -55,6 +59,10 @@ export default async function ManageMainPage(props: {
               ? 'Unfeatured product succesfully'
               : type_featured
               ? 'Type featured succesfully'
+              : added_collection 
+              ? 'Added product to collection succesfully'
+              : removed_collection
+              ? 'Removed product from collection succesfully'
               : ''
           }
           params={
@@ -62,7 +70,11 @@ export default async function ManageMainPage(props: {
               ? feature
               : unfeature
               ? unfeature
-              : type_featured && type_featured
+              : type_featured 
+              ? type_featured
+              : added_collection
+              ? added_collection
+              : removed_collection && removed_collection
           }
         />
 
@@ -70,7 +82,7 @@ export default async function ManageMainPage(props: {
           id='wrapper-search'
           className='flex items-center justify-center w-full'
         >
-          <FeaturedSearch products={products} featuredProducts={featuredProducts} />
+          <FeaturedSearch products={products} featuredProducts={featuredProducts} query={query} />
         </div>
 
         <div
@@ -78,7 +90,7 @@ export default async function ManageMainPage(props: {
           className='flex items-center justify-center flex-col w-full'
         >
           <FeaturedProducts featuredProducts={featuredProducts} />
-          <FeaturedType types={types} />
+          <FeaturedCollection collectionProducts={collectionProducts} />
         </div>
       </div>
     </>

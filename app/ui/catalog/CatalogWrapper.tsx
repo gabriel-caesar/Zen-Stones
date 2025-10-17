@@ -1,13 +1,13 @@
 'use client';
 
+import { FileQuestionMark, Filter } from 'lucide-react';
 import { useProductsContext } from './ProductsContext';
 import { useMemo, useState } from 'react';
-import { FileQuestionMark, Filter } from 'lucide-react';
-import CategoryCard from './CategoryCard';
+import FilterLargeScreen from './FilterLargeScreen';
+import FilterSidebar from './FilterSidebar';
+import CatalogCard from './CatalogCard';
 import Select from '../Select';
 import Link from 'next/link';
-import FilterSidebar from './FilterSidebar';
-import FilterLargeScreen from './FilterLargeScreen';
 
 export default function CatalogWrapper({
   productCount,
@@ -16,7 +16,7 @@ export default function CatalogWrapper({
 }) {
   const { filteredProducts, paramsArr } = useProductsContext();
 
-  const [category, type, material, max, min, indication] = paramsArr;
+  const [category] = paramsArr;
 
   // sort options
   const sort = ['Sort', 'Price (high-low)', 'Price (low-high)', 'Name (A-Z)'];
@@ -162,7 +162,7 @@ export default function CatalogWrapper({
                   '
                   >
                     {/* Product item card */}
-                    <CategoryCard product={product} />
+                    <CatalogCard product={product} />
 
                     <div
                       className='flex flex-col my-3 px-2 absolute bottom-0 w-full'

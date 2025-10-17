@@ -1,7 +1,7 @@
 'use server';
 
 import postgres from 'postgres';
-import { ProductWithImages, FrequencyArray, productType } from '../types/types';
+import { ProductWithImages, FrequencyArray, productType, Product } from '../types/types';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
@@ -31,6 +31,8 @@ export async function fetchSearchedProducts(
         products.meaning,
         products.material,
         products.featured_material,
+        products.featured_section,
+        products.is_collection,
         array_agg(product_images.url) AS urls
       FROM products
       LEFT JOIN product_images ON products.id = product_images.product_id
@@ -106,6 +108,7 @@ export async function fetchFeaturedProducts() {
         products.material,
         products.featured_material,
         products.featured_section,
+        products.is_collection,
         array_agg(product_images.url) AS urls
       FROM products
       LEFT JOIN product_images ON products.id = product_images.product_id
@@ -162,19 +165,6 @@ export async function fetchProperties(categoryName: string) {
     return frequency;
   } catch (error) {
     throw new Error(`Couldn't fetch properties. ${error}`);
-  }
-}
-
-// fetches the featured type
-export async function fetchFeaturedType() {
-  try {
-    const featured = await sql<productType[]>`
-      SELECT * FROM types
-    `;
-
-    return featured
-  } catch (error) {
-    throw new Error(`Couldn't fetch featured type. ${error}`);
   }
 }
 
@@ -352,18 +342,38 @@ export async function fetchFilteredProducts(filters: {
   return products;
 }
 
-// Figure out how to make the product properties
-// that come as params turn into arrays so they
-// can be compared in this function and return
-// the matching values from the database
+// gets all collection products to be rendered in the front-end
+export async function fetchCollectionProducts() {
+  try {
 
-// Sort is now in FilterAndSort() Component
-// so you will have to make the sorting logic
-// push params into the URL as well so the DB
-// sorts it to you. However if you wanna get
-// cheesy and choose the easiest path, you'll
-// have to transfer the dropdown to CatalogWrapper()
-// Component so you can sort it in the front-end
-// and place it alongside the product count in the UI
+    const products = await sql<ProductWithImages[]>`
+      SELECT 
+        products.id,
+        products.name,
+        products.category,
+        products.product_type,
+        products.price,
+        products.properties,
+        products.description,
+        products.rarity,
+        products.weight,
+        products.size,
+        products.indicated_for,
+        products.meaning,
+        products.material,
+        products.featured_material,
+        products.featured_section,
+        products.is_collection,
+        array_agg(product_images.url) AS urls
+      FROM products
+      LEFT JOIN product_images ON products.id = product_images.product_id
+      WHERE products.is_collection = TRUE
+      GROUP BY products.id;
+    `
 
-// Lastly you need to figure out why Pagination broke
+    return products
+
+  } catch (error) {
+    throw new Error(`Couldn't fetch collection product. ${error}`)
+  }
+}

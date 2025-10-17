@@ -1,203 +1,159 @@
 'use client';
 
+import { ProductCollectionCard } from './ProductCollectionCard';
+import { ProductWithImages } from '@/app/types/types';
 import { useState, useMemo } from 'react';
-import {
-  Gemstone,
-  GEMSTONE_CATEGORIES,
-  GemstoneCategory,
-} from '@/app/types/gemstone';
-import { Search, Filter, Grid3X3, List } from 'lucide-react';
-import { GemstoneCard } from './GemstoneCard';
+import { Search, X } from 'lucide-react';
+import Select from '../Select';
 
-interface GemstoneGalleryProps {
-  gemstones: Gemstone[];
-}
 
-export function FeaturedGallery({ gemstones }: GemstoneGalleryProps) {
-  const [activeCategory, setActiveCategory] = useState<GemstoneCategory>('All');
+export function FeaturedGallery({ collectionProducts }: {collectionProducts: ProductWithImages[]}) {
+
+  // filter and sort variables
   const [searchTerm, setSearchTerm] = useState('');
-  type sortOption = 'name' | 'price' | 'rarity';
-  const [sortBy, setSortBy] = useState<sortOption>('name');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [sortBy, setSortBy] = useState<string>('Sort');
+  const sortOptions = ['Sort', 'Price (high-low)', 'Price (low-high)', 'Name (A-Z)'];
 
-  const filteredAndSortedGemstones = useMemo(() => {
-    let filtered = gemstones;
-
-    // Filter by category
-    if (activeCategory !== 'All') {
-      filtered = filtered.filter((gem) => {
-        if (activeCategory === 'Precious') return gem.type === 'Precious';
-        if (activeCategory === 'Semi-Precious')
-          return gem.type === 'Semi-Precious';
-        if (activeCategory === 'Rare')
-          return (
-            gem.rarity === 'Rare' ||
-            gem.rarity === 'Very Rare' ||
-            gem.rarity === 'Legendary'
-          );
-        if (activeCategory === 'Crystal')
-          return gem.properties.some((prop) => prop.includes('Crystal'));
-        return true;
-      });
-    }
+  // function to deliver the array of products filtered and sorted
+  const filteredAndSortedProducts = useMemo(() => {
+    let filtered = collectionProducts;
 
     // Filter by search term
     if (searchTerm) {
       filtered = filtered.filter(
-        (gem) =>
-          gem.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          gem.color.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          gem.origin.toLowerCase().includes(searchTerm.toLowerCase())
+        (p) =>
+          p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          p.material.map(m => m.toLowerCase()).includes(searchTerm.toLowerCase()) ||
+          p.properties.map(pr => pr.toLowerCase()).includes(searchTerm.toLowerCase()) || 
+          p.indicated_for.map(i => i.toLowerCase()).includes(searchTerm.toLowerCase()) || 
+          p.product_type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          p.category.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     // Sort
-    filtered.sort((a, b) => {
-      if (sortBy === 'name') {
-        return a.name.localeCompare(b.name);
-      }
-      if (sortBy === 'price') {
-        return b.price - a.price;
-      }
-      if (sortBy === 'rarity') {
-        const rarityOrder = {
-          Common: 1,
-          Uncommon: 2,
-          Rare: 3,
-          'Very Rare': 4,
-          Legendary: 5,
-        };
-        return rarityOrder[b.rarity] - rarityOrder[a.rarity];
-      }
-      return 0;
-    });
+      filtered.sort((a, b) => {
+        if (sortBy === 'Name (A-Z)') return a.name.localeCompare(b.name);
+        if (sortBy === 'Price (low-high)') return a.price - b.price;
+        if (sortBy === 'Price (high-low)') return b.price - a.price;
+        return 0;
+      });
 
     return filtered;
-  }, [gemstones, activeCategory, searchTerm, sortBy]);
-
-  const handleAddToCart = (gemstone: Gemstone) => {
-    // Mock function - in a real app, this would add to cart
-    console.log('Added to cart:', gemstone.name);
-  };
-
-  const handleToggleFavorite = (gemstone: Gemstone) => {
-    // Mock function - in a real app, this would toggle favorite status
-    console.log('Toggled favorite:', gemstone.name);
-  };
+  }, [collectionProducts, searchTerm, sortBy]);
 
   return (
-    <section className='py-16 px-4 sm:px-6 lg:px-8'>
+    <section className='py-16 px-4 sm:px-6 lg:px-8' id='collection-galery'>
       <div className='max-w-7xl mx-auto'>
         {/* Header */}
         <div className='text-center mb-12'>
-          <h2 className='text-3xl sm:text-4xl mb-4'>Our Sterling Silver Collection</h2>
+          <h2 className='text-3xl sm:text-4xl mb-4'>Our Featured Collection</h2>
           <p className='text-muted-foreground max-w-2xl mx-auto'>
-            Discover our exclusive range of handcrafted sterling silver jewelry,
-            designed with precision and elegance. Each piece reflects timeless 
-            craftsmanship and the unmatched quality of genuine sterling silver.
+            Explore our exclusive selection of gemstone jewelry and 
+            metaphysical treasures. From elegant necklaces and bracelets 
+            to captivating statues, obelisks, and singing bowls. Each piece is 
+            thoughtfully chosen to inspire balance, beauty, and spiritual harmony.
           </p>
         </div>
 
         {/* Filters */}
-        <div className='mb-8'>
-          <div className='flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between mb-6'>
+        <div 
+          className='mb-8'
+          id='filters-container'
+        >
+
+          <div 
+            className='
+              flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between mb-6
+              w-full
+            '
+            id='search-sort-wrapper'
+          >
+
             {/* Search */}
-            <div className='relative flex-1 max-w-md bg-neutral-100 rounded-lg py-2 search-focus transition-all'>
+            <div 
+              className='relative bg-neutral-300 rounded-lg py-2 search-focus transition-all w-full lg:w-1/4'
+              id='search-collection-container'
+            >
               <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-500 h-4 w-4' />
               <input
-                type='search'
-                placeholder='Search by name, color, or origin...'
+                type='text'
+                placeholder='Search...'
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className='pl-10 text-[14px] focus-within:outline-none w-full pr-4'
+                onChange={(e) => {
+                  if (e.target.value.length < 25) {
+                    setSearchTerm(e.target.value)
+                  }
+                }}
+                className='pl-10 focus-within:outline-none w-full pr-4 rounded-lg'
               />
             </div>
 
-            <div 
-              className='flex gap-3 justify-between items-center bg-neutral-100 rounded-lg p-2 w-1/10'
-              onClick={() => {}}
-            >
-              {/* Sort */}
-              <Filter size={14} className='text-neutral-500' />
-              <select
-                value={sortBy}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                  setSortBy(e.target.value as sortOption)
-                }
-                className='hover:cursor-pointer'
-                id='dropdown-filter'
-                aria-label='dropdown-filter'
-              >
-                <option value='name'>Name</option>
-                <option value='Price'>Price</option>
-                <option value='Rarity'>Rarity</option>
-              </select>
-            </div>
+            {/* Sort */}
+            <Select
+              options={sortOptions}
+              selector={sortBy}
+              setSelector={setSortBy}
+              className='w-full mt-4 lg:mt-0 lg:w-1/4'
+              id='sort-selection'
+              ariaLabel='sort-selection'
+              name='sort-dropdown'
+            />
           </div>
 
-          {/* Category filters */}
-          <div className='flex flex-wrap gap-2'>
-            {GEMSTONE_CATEGORIES.map((category) => (
-              <button
-                key={category}
-                onClick={() => setActiveCategory(category)}
-                className='rounded-full'
-              >
-                {category}
-              </button>
-            ))}
-          </div>
         </div>
 
         {/* Results count */}
-        <div className='mb-6 flex items-center justify-between'>
-          <p className='text-muted-foreground'>
-            Showing {filteredAndSortedGemstones.length} of {gemstones.length}{' '}
-            gemstones
-          </p>
+        <div className='mb-6 flex flex-col items-center justify-between'>
           {searchTerm && (
-            <div className='gap-1'>
+            <div 
+              className='
+                mb-3 bg-yellow-100 rounded-lg py-2 px-4 flex w-full justify-between items-center overflow-hidden
+                lg:w-1/4
+              '
+              id='search-feedback-bubble'
+            >
               Search: "{searchTerm}"
               <button
+                id='erase-search-button'
                 onClick={() => setSearchTerm('')}
                 className='ml-1 hover:bg-background rounded-full w-4 h-4 flex items-center justify-center'
               >
-                ×
+                <X />
               </button>
             </div>
           )}
+          <p className='text-muted-foreground'>
+            Showing {filteredAndSortedProducts.length} of {collectionProducts.length}{' '}
+            products
+          </p>
         </div>
 
-        {/* Gemstone Grid */}
+        {/* Product Grid */}
         <div
           className={
-            viewMode === 'grid'
-              ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
-              : 'flex flex-col gap-4'
+            'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
           }
         >
-          {filteredAndSortedGemstones.map((gemstone) => (
-            <GemstoneCard
-              key={gemstone.id}
-              gemstone={gemstone}
-              onAddToCart={handleAddToCart}
-              onToggleFavorite={handleToggleFavorite}
+          {filteredAndSortedProducts.map((p) => (
+            <ProductCollectionCard
+              key={p.id}
+              collectionProducts={p}
             />
           ))}
         </div>
 
         {/* No results */}
-        {filteredAndSortedGemstones.length === 0 && (
+        {filteredAndSortedProducts.length === 0 && (
           <div className='text-center py-12'>
             <div className='text-muted-foreground mb-4'>
               <Search className='h-12 w-12 mx-auto mb-4 opacity-50' />
-              <h3 className='text-lg mb-2'>No gemstones found</h3>
+              <h3 className='text-lg mb-2'>No Products found</h3>
               <p>Try adjusting your search criteria or filters.</p>
             </div>
             <button
               onClick={() => {
                 setSearchTerm('');
-                setActiveCategory('All');
               }}
             >
               Clear Filters

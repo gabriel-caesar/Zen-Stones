@@ -45,6 +45,7 @@ export type Product = {
   size: string;
   featured_material: string;
   featured_section: boolean;
+  is_collection: boolean;
 }
 
 export type ProductWithImages = Product & {
@@ -64,7 +65,6 @@ export type productType = {
   product_type: string;
   parent_category: Category;
   featured_image: string;
-  featured_section: boolean;
 }
 
 // name of the uploaded files

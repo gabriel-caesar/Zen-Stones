@@ -76,7 +76,7 @@ export default function FeaturedProducts({
                 id='featured-product-card'
                 className='
                   rounded-lg overflow-hidden shadow-md w-3/4 flex flex-col 
-                  items-center justify-center relative mb-3 bg-white
+                  items-center justify-center relative mb-3 bg-white md:h-[360px]
                 '
               >
                 <Carousel product={p} />

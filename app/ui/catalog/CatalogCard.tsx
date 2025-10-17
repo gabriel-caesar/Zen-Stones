@@ -4,7 +4,7 @@ import { ProductWithImages } from '@/app/types/types';
 import { getRarityColor } from '@/app/lib/utils';
 import Carousel from '../Carousel';
 
-export default function CategoryCard({
+export default function CatalogCard({
   product,
 }: {
   product: ProductWithImages;

@@ -1,14 +1,13 @@
 'use server';
 
+import { fileCopy, Product, productType, ProductWithImages, User } from '../types/types';
 import { DeleteObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { createSession, deleteSession } from './session';
 import { loginSchema, productSchema, productTypeSchema } from './schemas';
-import { fileCopy, Product, productType, User } from '../types/types';
+import { createSession, deleteSession } from './session';
 import { redirect } from 'next/navigation';
-import postgres from 'postgres';
 import { headers } from 'next/headers';
+import postgres from 'postgres';
 import z from 'zod';
-import { fetchFeaturedType } from './data';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
@@ -212,52 +211,6 @@ export async function deleteType(prevState: any, formData: FormData) {
 
   // refresh the page and send a type deleted flag to show user feedback
   redirect('/admin-space/manage-types?productType_deleted=true');
-}
-
-export async function featureType(prevState: any, formData: FormData) {
-  // validating the selection
-  const validatedSelection = z.object({
-    featured_type: z.string()
-    .refine((type) => type !== 'Choose one option...', {
-      message: 'You have to choose one option',
-    }),
-  }).safeParse({ featured_type: formData.get('featured-type') })
-
-  // if the parsing wasn't successful, return the errors
-  if (!validatedSelection.success) {
-    return {
-      errors: validatedSelection.error.flatten().fieldErrors,
-    };
-  }
-
-  // destructuring the featured type from the data
-  const { featured_type } = validatedSelection.data;
-
-  // unfeaturing the old featured type
-  const queryFeaturedType = await fetchFeaturedType();
-  if (queryFeaturedType.length > 0) {
-    const oldFeaturedType = queryFeaturedType.find(t => t.featured_section);
-    if (oldFeaturedType) {
-      await sql`
-        UPDATE types
-        SET featured_section = FALSE
-        WHERE id = ${oldFeaturedType.id}
-      `
-    }
-  }
-
-  // featuring the new type
-  const result = await sql`
-    UPDATE types
-    SET featured_section = TRUE
-    WHERE product_type = ${featured_type}
-    RETURNING id;
-  `
-
-  if (result.length > 0) {
-    redirect('/admin-space/manage-main-page?type_featured=true')
-  }
-  redirect('/admin-space/manage-main-page?type_featured=false')
 }
 
 export async function login(prevState: any, formData: FormData) {
@@ -631,5 +584,35 @@ export async function unfeatureProduct(id: string) {
     return result.length > 0
   } catch (error) {
     throw new Error(`Couldn't unfeature this product. ${error}`)
+  }
+}
+
+// adds a product to the main page collections
+export async function addProductToCollections(product: ProductWithImages) {
+  try { 
+
+    await sql`
+      UPDATE products
+      SET is_collection = TRUE
+      WHERE id = ${product.id}
+    `
+
+  } catch (error) {
+    throw new Error(`Couldn't add product to collections. ${error}`)
+  }
+}
+
+// removes a product from the main page collections
+export async function removeProductFromCollections(product: ProductWithImages) {
+  try { 
+
+    await sql`
+      UPDATE products
+      SET is_collection = FALSE
+      WHERE id = ${product.id}
+    `
+
+  } catch (error) {
+    throw new Error(`Couldn't remove product from collections. ${error}`)
   }
 }
