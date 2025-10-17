@@ -3,7 +3,7 @@
 import SearchBarAdmin from '../adminspace/search-product/SearchBarAdmin';
 import { BookmarkXIcon, Loader2, Star } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { ProductWithImages } from '@/app/types/types';
+import { ProductWithImages } from '@/app/lib/types';
 import { addProductToCollections, featurizeProduct } from '@/app/lib/actions';
 import { getRarityColor } from '@/app/lib/utils';
 import { IoIosTrophy } from 'react-icons/io';

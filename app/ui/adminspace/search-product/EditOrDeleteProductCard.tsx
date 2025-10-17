@@ -1,7 +1,7 @@
 'use client';
 
 import { BookmarkXIcon, Loader2, Trash2 } from 'lucide-react';
-import { ProductWithImages } from '@/app/types/types';
+import { ProductWithImages } from '@/app/lib/types';
 import { deleteProduct } from '@/app/lib/actions';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';

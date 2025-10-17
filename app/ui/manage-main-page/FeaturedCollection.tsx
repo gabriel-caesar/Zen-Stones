@@ -3,7 +3,7 @@
 import { FaRegMinusSquare, FaRegPlusSquare } from 'react-icons/fa';
 import { removeProductFromCollections } from '@/app/lib/actions';
 import { IoDiamond, IoStarSharp } from 'react-icons/io5';
-import { ProductWithImages } from '@/app/types/types';
+import { ProductWithImages } from '@/app/lib/types';
 import { GiColombianStatue } from 'react-icons/gi';
 import { useMemo, useState } from 'react';
 import { Loader2, Search, Trash, X } from 'lucide-react';

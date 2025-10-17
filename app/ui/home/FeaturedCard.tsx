@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Carousel from '../Carousel';
 import { ImageSkeleton } from '../skeletons/ImageSkeleton';
-import { ProductWithImages } from '@/app/types/types';
+import { ProductWithImages } from '@/app/lib/types';
 
 export default function FeaturedCard({
   featuredProducts,

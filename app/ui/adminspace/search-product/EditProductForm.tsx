@@ -23,7 +23,7 @@ import { useFormStatus } from 'react-dom';
 import { useRootContext } from '@/app/RootContext';
 import Select from '../../Select';
 import InputImage from '../../InputImage';
-import { ProductWithImages } from '@/app/types/types';
+import { ProductWithImages } from '@/app/lib/types';
 import { uniqueId } from '@/app/lib/utils';
 import { editProduct } from '@/app/lib/actions';
 

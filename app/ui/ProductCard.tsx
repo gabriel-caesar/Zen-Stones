@@ -1,6 +1,6 @@
 'use client';
 
-import { ProductWithImages } from '../types/types';
+import { ProductWithImages } from '../lib/types';
 import { getRarityColor } from '../lib/utils';
 import Carousel from './Carousel';
 

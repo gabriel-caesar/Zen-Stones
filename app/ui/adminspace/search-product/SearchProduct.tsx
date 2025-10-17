@@ -2,7 +2,7 @@
 
 import SearchBarAdmin from './SearchBarAdmin';
 import EditOrDeleteProductCard from './EditOrDeleteProductCard';
-import { ProductWithImages } from '@/app/types/types';
+import { ProductWithImages } from '@/app/lib/types';
 import { PackageSearch } from 'lucide-react';
 
 export default function SearchProduct({

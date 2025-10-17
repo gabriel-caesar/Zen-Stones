@@ -1,6 +1,6 @@
 'use client';
 
-import { ProductWithImages } from '@/app/types/types';
+import { ProductWithImages } from '@/app/lib/types';
 import { useWrapperContext } from '../LayoutWrapper';
 import ProductCard from '../ProductCard';
 import Link from 'next/link';

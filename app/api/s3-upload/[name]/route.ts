@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { S3Client } from '@aws-sdk/client-s3';
 import { uploadFileToS3 } from '@/app/lib/actions';
-import { fileCopy } from '@/app/types/types';
+import { fileCopy } from '@/app/lib/types';
 
 if (!process.env.AWS_S3_REGION || 
     !process.env.AWS_S3_ACCESS_KEY_ID || 

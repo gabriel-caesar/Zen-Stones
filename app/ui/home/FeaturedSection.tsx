@@ -1,5 +1,5 @@
 import { Crown, Sparkles, Shield, Award } from 'lucide-react';
-import { ProductWithImages } from '@/app/types/types';
+import { ProductWithImages } from '@/app/lib/types';
 import FeaturedCard from './FeaturedCard';
 import Link from 'next/link';
 

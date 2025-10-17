@@ -8,7 +8,7 @@ import {
   X,
 } from 'lucide-react';
 import { FaFacebook, FaInstagram } from 'react-icons/fa';
-import { productType, SessionPayload } from '@/app/types/types';
+import { productType, SessionPayload } from '@/app/lib/types';
 import { logout } from '@/app/lib/actions';
 import NavButton from './NavButton';
 import Link from 'next/link';

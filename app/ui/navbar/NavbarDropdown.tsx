@@ -1,4 +1,4 @@
-import { productType } from '@/app/types/types';
+import { productType } from '@/app/lib/types';
 import NavButton from './NavButton';
 import Link from 'next/link';
 import { Url } from 'next/dist/shared/lib/router/router';

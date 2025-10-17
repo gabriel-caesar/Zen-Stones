@@ -1,7 +1,7 @@
 'use client'
 
 import { Loader2, StarOff, VectorSquare } from 'lucide-react';
-import { ProductWithImages } from '@/app/types/types';
+import { ProductWithImages } from '@/app/lib/types';
 import { unfeatureProduct } from '@/app/lib/actions';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';

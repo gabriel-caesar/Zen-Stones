@@ -3,7 +3,7 @@
 import { createContext, useContext, useState } from 'react';
 import Footer from './footer/Footer';
 import Navbar from './navbar/Navbar';
-import { WrapperContextType } from '../types/types';
+import { WrapperContextType } from '../lib/types';
 
 // wrapper to send searchFocus to MainQueryProduct and bypass root page.tsx which is a server component
 export const WrapperContext = createContext<WrapperContextType | null>(null);

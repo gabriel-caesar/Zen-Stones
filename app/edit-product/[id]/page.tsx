@@ -1,7 +1,7 @@
 'use server'
 
 import { fetchSearchedProducts, fetchSingleItem } from '@/app/lib/data'
-import { ProductWithImages } from '@/app/types/types';
+import { ProductWithImages } from '@/app/lib/types';
 import EditProductForm from '@/app/ui/adminspace/search-product/EditProductForm';
 import MainQueryProduct from '@/app/ui/navbar/MainQueryProduct';
 

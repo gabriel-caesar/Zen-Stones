@@ -2,7 +2,7 @@
 
 import { ArrowLeft, ArrowRight, Image } from 'lucide-react';
 import { SetStateAction, useEffect, useState } from 'react';
-import { ProductWithImages } from '../types/types';
+import { ProductWithImages } from '../lib/types';
 import { deleteSingleImageFile } from '../lib/actions';
 
 export default function InputImage({

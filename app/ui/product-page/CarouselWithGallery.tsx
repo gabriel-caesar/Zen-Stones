@@ -1,6 +1,6 @@
 'use client';
 
-import { ProductWithImages } from '@/app/types/types';
+import { ProductWithImages } from '@/app/lib/types';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { SetStateAction } from 'react';
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { ProductWithImages } from '../types/types';
+import { ProductWithImages } from '../lib/types';
 import { useState } from 'react';
 
 export default function Carousel({

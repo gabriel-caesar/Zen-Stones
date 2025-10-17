@@ -1,7 +1,7 @@
 'use client';
 
 import { ProductCollectionCard } from './ProductCollectionCard';
-import { ProductWithImages } from '@/app/types/types';
+import { ProductWithImages } from '@/app/lib/types';
 import { useState, useMemo } from 'react';
 import { Search, X } from 'lucide-react';
 import Select from '../Select';

@@ -1,4 +1,4 @@
-import { ProductWithImages } from '@/app/types/types';
+import { ProductWithImages } from '@/app/lib/types';
 import { getRarityColor } from '@/app/lib/utils';
 import { Mail, Star } from 'lucide-react';
 import Carousel from '../Carousel';

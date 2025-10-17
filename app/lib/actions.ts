@@ -1,6 +1,6 @@
 'use server';
 
-import { fileCopy, Product, productType, ProductWithImages, User } from '../types/types';
+import { fileCopy, Product, productType, ProductWithImages, User } from './types';
 import { DeleteObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { loginSchema, productSchema, productTypeSchema } from './schemas';
 import { createSession, deleteSession } from './session';

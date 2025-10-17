@@ -4,7 +4,7 @@ import { Box, Loader2 } from 'lucide-react';
 import Select from '../Select';
 import { useActionState, useEffect, useState } from 'react';
 import { createType, deleteType } from '@/app/lib/actions';
-import { Category, productType } from '@/app/types/types';
+import { Category, productType } from '@/app/lib/types';
 import InputImage from '../InputImage';
 import { useFormStatus } from 'react-dom';
 

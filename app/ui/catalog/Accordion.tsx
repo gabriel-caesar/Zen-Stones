@@ -4,7 +4,7 @@ import { ChevronDown } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { SetStateAction, useEffect, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
-import { FrequencyArray } from '@/app/types/types';
+import { FrequencyArray } from '@/app/lib/types';
 import { useProductsContext } from './ProductsContext';
 
 export default function Accordion({

@@ -1,6 +1,6 @@
 'use client'
 
-import { ProductWithImages } from '@/app/types/types';
+import { ProductWithImages } from '@/app/lib/types';
 import { useState } from 'react';
 import CarouselWithGallery from './CarouselWithGallery';
 

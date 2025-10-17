@@ -2,7 +2,7 @@ import { ChevronDown } from 'lucide-react';
 import NavButton from './NavButton';
 import { useState } from 'react';
 import Link from 'next/link';
-import { productType } from '@/app/types/types';
+import { productType } from '@/app/lib/types';
 
 export default function Accordion({
   text,

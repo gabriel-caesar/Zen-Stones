@@ -1,4 +1,4 @@
-import { FileMimicType } from '../types/types';
+import { FileMimicType } from './types';
 
 // get rarity color for the card rarity badge
 export const getRarityColor = (rarity: string) => {

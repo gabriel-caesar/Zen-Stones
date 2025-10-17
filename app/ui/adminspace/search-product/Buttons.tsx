@@ -1,7 +1,7 @@
 'use client'
 
 import { deleteProduct } from '@/app/lib/actions';
-import { ProductWithImages } from '@/app/types/types';
+import { ProductWithImages } from '@/app/lib/types';
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react'

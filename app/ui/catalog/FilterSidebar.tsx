@@ -8,7 +8,7 @@ import {
   fetchTypes,
 } from '@/app/lib/data';
 import { SetStateAction, useEffect, useState } from 'react';
-import { FrequencyArray } from '@/app/types/types';
+import { FrequencyArray } from '@/app/lib/types';
 import { Filter, X } from 'lucide-react';
 import Accordion from './Accordion';
 import { useProductsContext } from './ProductsContext';

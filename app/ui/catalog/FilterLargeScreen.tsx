@@ -8,7 +8,7 @@ import {
   fetchTypes,
 } from '@/app/lib/data';
 import Accordion from './Accordion';
-import { FrequencyArray } from '@/app/types/types';
+import { FrequencyArray } from '@/app/lib/types';
 import { Suspense, useEffect, useState } from 'react';
 import { useProductsContext } from './ProductsContext';
 import { makeArray } from '@/app/lib/utils';

@@ -1,7 +1,7 @@
 'use client';
 
 // used to pass down the filtered products from the layout component to its children
-import { ProductWithImages } from '@/app/types/types';
+import { ProductWithImages } from '@/app/lib/types';
 import { createContext, useContext } from 'react';
 export const ProductsContext = createContext<ContextValues | null>(null);
 

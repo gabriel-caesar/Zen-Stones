@@ -1,7 +1,7 @@
 'use server';
 
 import postgres from 'postgres';
-import { ProductWithImages, FrequencyArray, productType, Product } from '../types/types';
+import { ProductWithImages, FrequencyArray, productType, Product } from './types';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
