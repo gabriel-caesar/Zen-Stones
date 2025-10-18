@@ -75,20 +75,18 @@ export default function Accordion({
             No sub-categories found
           </p>
         )}
-        {text === 'Jewelry' && (
-          <Link
-           href={'/catalog'}
-           className={`${
-              openAccordion !== text && 'pointer-events-none'
-            } rounded-lg px-2 py-1 w-full hover:cursor-pointer`}
-            onClick={(e) => {
-              if (openAccordion !== text) e.preventDefault();
-              setOpenSidebarMenu?.(!openSidebarMenu)
-            }}
-           >
-            Shop All
-          </Link>
-        )}
+        <Link
+          href={text === 'Jewelry' ? '/catalog?category=jewelry' : text === 'Metaphysical' ? '/catalog?category=metaphysical' : ''}
+          className={`${
+            openAccordion !== text && 'pointer-events-none'
+          } rounded-lg px-2 py-1 w-full hover:cursor-pointer`}
+          onClick={(e) => {
+            if (openAccordion !== text) e.preventDefault();
+            setOpenSidebarMenu?.(!openSidebarMenu)
+          }}
+          >
+          {text === 'Jewelry' ? 'All Jewelry' : text === 'Metaphysical' ? 'All Metaphysical' : ''}
+        </Link>
       </div>
     </div>
   );
