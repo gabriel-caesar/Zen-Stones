@@ -1,11 +1,14 @@
-'use server'
-
-import { fetchFilteredProducts, fetchProductCount, fetchSearchedProducts } from '@/app/lib/data';
+import { fetchFilteredProducts, fetchSearchedProducts } from '@/app/lib/data';
 import { ProductsContextWrapper } from '../ui/catalog/ProductsContext';
 import CatalogWrapper from '@/app/ui/catalog/CatalogWrapper';
 import MainQueryProduct from '@/app/ui/navbar/MainQueryProduct';
 import Pagination from '@/app/ui/Pagination';
 import { makeArray } from '../lib/utils';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Catalog',
+};
 
 export default async function Catalog({
   searchParams,

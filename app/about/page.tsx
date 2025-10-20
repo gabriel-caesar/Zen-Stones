@@ -1,14 +1,17 @@
-'use server';
-
 import { Lora } from 'next/font/google';
 import MainQueryProduct from '../ui/navbar/MainQueryProduct';
 import { fetchSearchedProducts } from '../lib/data';
 import { Video } from '../ui/about/Video';
+import { Metadata } from 'next';
 
 const lora = Lora({
   subsets: ['latin'],
   style: ['normal', 'italic'],
 });
+
+export const metadata: Metadata = {
+  title: 'About',
+};
 
 export default async function About(props: {
   searchParams: Promise<{

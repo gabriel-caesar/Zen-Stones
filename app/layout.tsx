@@ -8,7 +8,10 @@ import './css/scrollbars.css';
 import './css/globals.css';
 
 export const metadata: Metadata = {
-  title: "Zen Stones",
+  title: {
+    template: '%s | Zen Stones',
+    default: 'Zen Stones',
+  },
   description: `
     Your local place to buy metaphysical jewelry and accessories, save more by browsing in Zen Stones.
   `,

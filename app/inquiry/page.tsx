@@ -1,8 +1,11 @@
-'use server'
-
+import { Metadata } from 'next';
 import FeedbackDialog from '../ui/adminspace/FeedbackDialog';
 import InquiryForm from '../ui/inquiry/InquiryForm';
 import Log from '../ui/inquiry/Log';
+
+export const metadata: Metadata = {
+  title: 'Inquiry',
+};
 
 export default async function Inquiry(props: {
   searchParams: Promise<{

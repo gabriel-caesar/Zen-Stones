@@ -1,8 +1,13 @@
-import { fetchSearchedProducts } from '@/app/lib/data';
-import AddProductForm from '@/app/ui/adminspace/AddProductForm';
-import FeedbackDialog from '@/app/ui/adminspace/FeedbackDialog';
 import SearchProduct from '@/app/ui/adminspace/search-product/SearchProduct';
+import FeedbackDialog from '@/app/ui/adminspace/FeedbackDialog';
+import AddProductForm from '@/app/ui/adminspace/AddProductForm';
 import MainQueryProduct from '@/app/ui/navbar/MainQueryProduct';
+import { fetchSearchedProducts } from '@/app/lib/data';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Manage Products',
+};
 
 export default async function ManageProducts(props: {
   searchParams?: Promise<{

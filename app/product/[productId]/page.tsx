@@ -1,5 +1,3 @@
-'use server';
-
 import { fetchSearchedProducts, fetchSingleItem } from '@/app/lib/data';
 import { ProductWithImages } from '@/app/lib/types';
 import MainQueryProduct from '@/app/ui/navbar/MainQueryProduct';
@@ -7,7 +5,12 @@ import Accordion from '@/app/ui/product-page/Accordion';
 import DescriptionToggler from '@/app/ui/product-page/DescriptionToggler';
 import ProductPageCarousel from '@/app/ui/product-page/ProductPageCarousel';
 import { Mail } from 'lucide-react';
+import { Metadata } from 'next';
 import Link from 'next/link';
+
+export const metadata: Metadata = {
+  title: 'Product',
+};
 
 export default async function ProductPage({
   params,

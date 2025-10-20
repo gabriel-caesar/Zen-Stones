@@ -1,8 +1,13 @@
-import { getTypes } from '@/app/lib/actions';
-import { fetchSearchedProducts } from '@/app/lib/data';
 import FeedbackDialog from '@/app/ui/adminspace/FeedbackDialog';
 import ManageTypeForm from '@/app/ui/adminspace/ManageTypeForm';
 import MainQueryProduct from '@/app/ui/navbar/MainQueryProduct';
+import { fetchSearchedProducts } from '@/app/lib/data';
+import { getTypes } from '@/app/lib/actions';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Manage Types',
+};
 
 export default async function ManageTypes(props: {
   searchParams?: Promise<{

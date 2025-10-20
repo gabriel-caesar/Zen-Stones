@@ -1,9 +1,12 @@
-'use server'
-
-import { Box, FileBadge, FileBox, Loader2 } from 'lucide-react';
-import CardOption from '../ui/adminspace/CardOption';
 import MainQueryProduct from '../ui/navbar/MainQueryProduct';
+import CardOption from '../ui/adminspace/CardOption';
+import { Box, FileBadge, FileBox, Loader2 } from 'lucide-react';
 import { fetchSearchedProducts } from '../lib/data';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Admin Space',
+};
 
 export default async function AdminSpace(props: {
   searchParams: Promise<{

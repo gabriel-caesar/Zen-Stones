@@ -1,5 +1,3 @@
-'use server';
-
 import {
   fetchCollectionProducts,
   fetchFeaturedProducts,
@@ -10,6 +8,11 @@ import FeaturedProducts from '@/app/ui/manage-main-page/FeaturedProducts';
 import FeaturedSearch from '@/app/ui/manage-main-page/FeaturedSearch';
 import FeaturedCollection from '@/app/ui/manage-main-page/FeaturedCollection';
 import MainQueryProduct from '@/app/ui/navbar/MainQueryProduct';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Manage Main Page',
+};
 
 export default async function ManageMainPage(props: {
   searchParams: Promise<{

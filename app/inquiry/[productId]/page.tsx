@@ -1,8 +1,11 @@
-'use server'
-
 import Log from '@/app/ui/inquiry/Log';
 import InquiryForm from '@/app/ui/inquiry/InquiryForm';
 import { fetchSingleItem } from '@/app/lib/data';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Inquiry',
+};
 
 export default async function InquiryWithParams(props: {
   params: Promise<{

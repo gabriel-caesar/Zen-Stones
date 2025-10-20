@@ -1,9 +1,12 @@
-'use server'
-
 import { fetchSearchedProducts, fetchSingleItem } from '@/app/lib/data'
 import { ProductWithImages } from '@/app/lib/types';
+import { Metadata } from 'next';
 import EditProductForm from '@/app/ui/adminspace/search-product/EditProductForm';
 import MainQueryProduct from '@/app/ui/navbar/MainQueryProduct';
+
+export const metadata: Metadata = {
+  title: 'Edit Product',
+};
 
 export default async function EditProduct({ params, searchParams }: { params: Promise<{ id: string }>, searchParams: Promise<{
   mainquery?: string

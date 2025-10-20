@@ -1,8 +1,11 @@
-'use server'
-
-import { fetchSearchedProducts } from '../lib/data';
-import LoginForm from '../ui/LoginForm';
 import MainQueryProduct from '../ui/navbar/MainQueryProduct';
+import LoginForm from '../ui/LoginForm';
+import { fetchSearchedProducts } from '../lib/data';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Login',
+};
 
 export default async function Login(props: {
   searchParams: Promise<{
