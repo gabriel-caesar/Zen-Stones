@@ -2,7 +2,7 @@
 
 import { fileCopy, Product, productType, ProductWithImages, User } from './types';
 import { DeleteObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { loginSchema, productSchema, productTypeSchema } from './schemas';
+import { inquirySchema, loginSchema, productSchema, productTypeSchema } from './schemas';
 import { createSession, deleteSession } from './session';
 import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
@@ -337,6 +337,49 @@ export async function editProduct(prevState: any, formData: FormData) {
 
   // refresh the page and send a product edited flag to show user feedback
   redirect('/admin-space/manage-products?product_edited=true');
+}
+
+export async function sendInquiry(prevState: any, formData: FormData) {
+
+  // awaiting the promise returned from the function
+  const baseUrl = await getBaseUrl();
+
+  // if product_id is empty, we delete it instead of keeping it as an empty string
+  const rawData = Object.fromEntries(formData.entries());
+  if (rawData.product_id === '') delete rawData.product_id;
+
+  const validatedFields = inquirySchema.safeParse(rawData);
+
+  // if the parsing wasn't successful, return the errors
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+    };
+  }
+
+  // destructuring the form data from the validated data
+  const { name, title, inquiry, email, product_id } = validatedFields.data;
+
+  try {
+
+    // calls the api which feeds the email
+    await fetch(`${baseUrl}/api/inquiry`, {
+      method: 'POST',
+      body: JSON.stringify({
+        name: name,
+        title: title,
+        inquiry: inquiry,
+        email: email,
+        product_id: product_id,
+      })
+    })
+
+  } catch (error) {
+    throw new Error(`Couldn't send inquiry. ${error}`)
+  }
+
+  // redirect the user to the same address but with a feedback params
+  redirect('/inquiry?inquiry=true');
 }
 
 async function updatedProductRow(

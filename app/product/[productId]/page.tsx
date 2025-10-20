@@ -135,7 +135,7 @@ export default async function ProductPage({
               {/* Button wrapper to delete or edit product */}
               <div className='flex flex-col my-3 md:my-0 lg:w-3/5' id='buttons-wrapper'>
                 <Link
-                  href={`/products/${product.id}`}
+                  href={`/inquiry/${product.id}`}
                   className='
                     lg:text-md lg:flex-row
                     md:p-2 md:flex-col

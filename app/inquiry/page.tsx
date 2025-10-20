@@ -1,50 +1,26 @@
-'use client'
+'use server'
 
-import { UserStar } from 'lucide-react';
-import Link from 'next/link';
-import InquiryForm from '../ui/InquiryForm';
-import { logout } from '../lib/actions';
-import { useRootContext } from '../RootContext';
+import FeedbackDialog from '../ui/adminspace/FeedbackDialog';
+import InquiryForm from '../ui/inquiry/InquiryForm';
+import Log from '../ui/inquiry/Log';
 
-export default function Inquiry() {
+export default async function Inquiry(props: {
+  searchParams: Promise<{
+    inquiry?: string
+  }>;
+}) {
 
-  // getting the provided values from context
-  const { session } = useRootContext();
+  const searchParams = await props.searchParams;
+  const inquiry = searchParams?.inquiry;
 
   return (
     <div
       className='flex flex-col justify-center items-center'
       id='inquiry-page-wrapper'
     >
+      <FeedbackDialog text={'Sent inquiry successfully'} params={inquiry} />
       <InquiryForm />
-      <div
-        className='w-full border-t-1 border-neutral-300 px-2 py-6'
-      >
-        <h1 className='flex font-bold mb-6'>
-          <UserStar className='ml-1 mr-2' />
-          {!session ? 'Admin log in' : 'Admin log out'}
-        </h1>
-        
-        {!session ? (
-          <Link
-            href={'/login'}
-            className='bg-black text-white hover:cursor-pointer hover:bg-black/60 rounded-lg py-2 px-10 transition-all'
-            id='login-button'
-            aria-label='login-button'
-          >
-            Log In
-          </Link>
-        ) : (
-          <button
-            onClick={() => logout()}
-            className='active:bg-black/30 bg-black text-white hover:cursor-pointer hover:bg-black/60 rounded-lg py-2 px-10 transition-all'
-            id='logout-button'
-            aria-label='logout-button'
-          >
-            Log Out
-          </button>
-        )}
-      </div>
+      <Log />
     </div>
   )
 }

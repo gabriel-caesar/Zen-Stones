@@ -1,6 +1,7 @@
-import { Gem, Mail, Phone, MapPin, MailIcon } from 'lucide-react';
-import Link from 'next/link';
+import { Gem, Mail, Phone, MapPin, MailIcon, Calendar } from 'lucide-react';
 import { FaFacebook, FaInstagram } from 'react-icons/fa';
+import { hours, StoreHoursType } from './hours';
+import Link from 'next/link';
 
 export default function Footer() {
   return (
@@ -14,8 +15,10 @@ export default function Footer() {
               <span className='text-xl font-semibold'>Zen Stones</span>
             </div>
             <p className='text-neutral-500 text-sm'>
-              Discover the world's finest gemstones, carefully curated for
-              collectors and jewelry enthusiasts worldwide.
+              Discover our exquisite collection of gemstone 
+              jewelry and metaphysical treasures. From handcrafted 
+              sterling silver pieces to spiritually inspired accessories 
+              that bring harmony, beauty, and purpose to your space.
             </p>
             <div className='flex space-x-2 justify-start items-center p-2'>
               <a
@@ -39,50 +42,17 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div className='space-y-4'>
-            <h3 className='font-semibold'>Quick Links</h3>
-            <ul className='space-y-2 text-sm'>
-              <li>
-                <a
-                  href='#'
-                  className='text-neutral-500 hover:text-foreground transition-colors'
-                >
-                  Our Story
-                </a>
-              </li>
-              <li>
-                <a
-                  href='#'
-                  className='text-neutral-500 hover:text-foreground transition-colors'
-                >
-                  Gemstone Guide
-                </a>
-              </li>
-              <li>
-                <a
-                  href='#'
-                  className='text-neutral-500 hover:text-foreground transition-colors'
-                >
-                  Certification
-                </a>
-              </li>
-              <li>
-                <a
-                  href='#'
-                  className='text-neutral-500 hover:text-foreground transition-colors'
-                >
-                  Custom Jewelry
-                </a>
-              </li>
-              <li>
-                <a
-                  href='#'
-                  className='text-neutral-500 hover:text-foreground transition-colors'
-                >
-                  Investment Guide
-                </a>
-              </li>
+          {/* Store hours */}
+          <div className='space-y-4 lg:px-20'>
+            <h3 className='font-semibold flex'><Calendar className='mr-2' /> Store hours</h3>
+            <ul className='flex flex-col'>
+              {hours.map((d: StoreHoursType) => {
+                return (
+                <li key={d.day} className='text-sm flex items-center justify-start text-neutral-500'>
+                  <p className='w-48'>{d.day} • {d.hours}</p>
+                </li>
+                )
+              })}
             </ul>
           </div>
 
