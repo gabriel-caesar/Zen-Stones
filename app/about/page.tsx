@@ -51,24 +51,38 @@ export default async function About(props: {
             The Story of Zen Stones
           </h1>
 
-          <p className='font-light mt-1 lg:font-normal min-[2000px]:text-4xl' id='paragraph-1'>
-            The vision behind Zen Stones began with a simple yet heartfelt idea: to craft jewelry infused with meaning 
-            and natural beauty. It started with bracelets made from genuine stones such as Amethyst, Turquoise, 
-            and Mother of Pearl, pieces created first for my personal collection and later for family and friends 
-            who were drawn to their charm and energy.
+          <p
+            className='font-light mt-1 lg:font-normal min-[2000px]:text-4xl'
+            id='paragraph-1'
+          >
+            The vision behind Zen Stones began with a simple yet heartfelt idea:
+            to craft jewelry infused with meaning and natural beauty. It started
+            with bracelets made from genuine stones such as Amethyst, Turquoise,
+            and Mother of Pearl, pieces created first for my personal collection
+            and later for family and friends who were drawn to their charm and
+            energy.
           </p>
 
-          <p className='font-light mt-1 lg:font-normal min-[2000px]:text-4xl' id='paragraph-2'>
-            In 2019, the dream evolved into something greater with the opening of our first shop in 
-            Ridgewood, New Jersey. Our mission was to offer crystals and jewelry not just as adornments 
-            but as tools for healing, balance, and energy restoration. At the time, I was married to an 
-            acupuncturist deeply knowledgeable in stone medicine and the therapeutic use of crystals, a 
-            partnership that beautifully complemented and strengthened the vision behind Zen Stones.
+          <p
+            className='font-light mt-1 lg:font-normal min-[2000px]:text-4xl'
+            id='paragraph-2'
+          >
+            In 2019, the dream evolved into something greater with the opening
+            of our first shop in Ridgewood, New Jersey. Our mission was to offer
+            crystals and jewelry not just as adornments but as tools for
+            healing, balance, and energy restoration. At the time, I was married
+            to an acupuncturist deeply knowledgeable in stone medicine and the
+            therapeutic use of crystals, a partnership that beautifully
+            complemented and strengthened the vision behind Zen Stones.
           </p>
 
-          <p className='font-light mt-1 lg:font-normal min-[2000px]:text-4xl' id='paragraph-3'>
-            Nearly six years later, that dream continues to flourish, grounded in the same passion for 
-            authenticity, energy, and the quiet power of nature's gems.
+          <p
+            className='font-light mt-1 lg:font-normal min-[2000px]:text-4xl'
+            id='paragraph-3'
+          >
+            Nearly six years later, that dream continues to flourish, grounded
+            in the same passion for authenticity, energy, and the quiet power of
+            nature's gems.
           </p>
         </section>
 
@@ -78,19 +92,21 @@ export default async function About(props: {
           className='flex flex-col mb-6 px-6 lg:px-60 min-[2000px]:px-120 min-[2000px]:my-10'
         >
           <p className='font-light mb-2 lg:font-normal min-[2000px]:text-4xl'>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Optio,
-            maxime. Tenetur perspiciatis asperiores accusantium libero ea at
-            nihil et illum? Necessitatibus, debitis! Maiores, quas. Itaque animi
-            maiores quam quisquam cum!
+            Each crystal at Zen Stones carries its own story, a journey from
+            deep within the Earth to your hands. Every piece is carefully chosen
+            for its unique energy and purpose, ensuring that what you bring home
+            isn’t just beautiful, but meaningful. Our goal is to create an
+            experience that inspires mindfulness, grounding, and connection to
+            the natural world.
           </p>
           <Video />
           <p className='font-light mt-2 lg:font-normal min-[2000px]:text-4xl'>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda
-            magnam quae, eum, consectetur libero architecto quas iure quaerat
-            laborum commodi nam! Alias voluptatum voluptate, rerum cupiditate
-            similique tempora obcaecati laudantium atque iusto suscipit earum,
-            sit recusandae ipsum praesentium aliquid nobis ducimus libero? A
-            fugiat in ducimus, ullam perferendis illo quos?
+            Beyond jewelry, Zen Stones is a place of reflection. Whether someone
+            visits to find a gift, explore energy healing, or simply take a
+            quiet moment for themselves, the shop serves as a reminder that
+            harmony begins within. Through our work, we hope to share not only
+            the beauty of nature’s stones but also the peace they help awaken in
+            those who seek them.
           </p>
         </section>
 
@@ -99,7 +115,10 @@ export default async function About(props: {
           id='about-dora-section'
           className='flex flex-col mb-6 px-6 bg-yellow-100 py-10 lg:px-60 min-[2000px]:px-120 min-[2000px]:my-10'
         >
-          <div id="about-the-owner-header" className='mb-8 md:mb-10 flex flex-col justify-center items-center'>
+          <div
+            id='about-the-owner-header'
+            className='mb-8 md:mb-10 flex flex-col justify-center items-center'
+          >
             <h1
               className={`${lora.className} text-2xl md:text-4xl text-black text-center`}
             >
@@ -122,69 +141,74 @@ export default async function About(props: {
               alt='owner-photo'
               aria-label='owner-photo'
             />
-          <ul id="questions-list" aria-label="questions-list">
-
-            <li
-              className='flex flex-col mt-8 md:mt-0'
-              id='why-zen-stones-quetion'
-              aria-label='why-zen-stones-quetion'
-            >
-              <h1
-                className={`${lora.className} text-lg italic text-yellow-500 text-start mb-1 min-[2000px]:text-5xl`}
+            <ul id='questions-list' aria-label='questions-list'>
+              <li
+                className='flex flex-col mt-8 md:mt-0'
+                id='why-zen-stones-quetion'
+                aria-label='why-zen-stones-quetion'
               >
-                Why Zen Stones?
-              </h1>
+                <h1
+                  className={`${lora.className} text-lg italic text-yellow-500 text-start mb-1 min-[2000px]:text-5xl`}
+                >
+                  Why Zen Stones?
+                </h1>
 
-              <p className='font-light lg:font-normal min-[2000px]:text-4xl'>
-                <strong>“Zen Stones” </strong> embodies the essence of meditation and intuition. 
-                A sanctuary of peace, balance, and calm energy. Every visit to 
-                our shop invites the customer into an atmosphere of serenity, 
-                where each crystal and piece of jewelry reflects harmony, 
-                mindfulness, and inner renewal.
-              </p>
-            </li>
+                <p className='font-light lg:font-normal min-[2000px]:text-4xl'>
+                  <strong>“Zen Stones” </strong> embodies the essence of
+                  meditation and intuition. A sanctuary of peace, balance, and
+                  calm energy. Every visit to our shop invites the customer into
+                  an atmosphere of serenity, where each crystal and piece of
+                  jewelry reflects harmony, mindfulness, and inner renewal.
+                </p>
+              </li>
 
-            <li className='flex flex-col mt-8' id='what-crystal-quetion' aria-label='what-crystal-quetion'>
-              <h1
-                className={`${lora.className} text-lg italic text-yellow-500 text-start mb-1 min-[2000px]:text-5xl`}
+              <li
+                className='flex flex-col mt-8'
+                id='what-crystal-quetion'
+                aria-label='what-crystal-quetion'
               >
-                What's your favorite crystal and why?
-              </h1>
+                <h1
+                  className={`${lora.className} text-lg italic text-yellow-500 text-start mb-1 min-[2000px]:text-5xl`}
+                >
+                  What's your favorite crystal and why?
+                </h1>
 
-              <p className='font-light lg:font-normal min-[2000px]:text-4xl'>
-                <strong>Tourmaline </strong> has always been one of my most cherished stones, 
-                admired in all its colors and forms: black, rainbow, watermelon, 
-                pink, green, or even Tourmaline in quartz, whether polished or raw. 
-                Its vibrant energy and extraordinary properties make it one of the 
-                most powerful and protective crystals in the mineral kingdom, 
-                a true guardian of balance and spiritual strength.
-              </p>
-            </li>
+                <p className='font-light lg:font-normal min-[2000px]:text-4xl'>
+                  <strong>Tourmaline </strong> has always been one of my most
+                  cherished stones, admired in all its colors and forms: black,
+                  rainbow, watermelon, pink, green, or even Tourmaline in
+                  quartz, whether polished or raw. Its vibrant energy and
+                  extraordinary properties make it one of the most powerful and
+                  protective crystals in the mineral kingdom, a true guardian of
+                  balance and spiritual strength.
+                </p>
+              </li>
 
-            <li
-              className='flex flex-col mt-8'
-              id='crystal-recommendation-question'
-              aria-label='crystal-recommendation-question'
-            >
-              <h1
-                className={`${lora.className} text-lg italic text-yellow-500 text-start mb-1 min-[2000px]:text-5xl`}
+              <li
+                className='flex flex-col mt-8'
+                id='crystal-recommendation-question'
+                aria-label='crystal-recommendation-question'
               >
-                What's your must have crystals recommendation?
-              </h1>
+                <h1
+                  className={`${lora.className} text-lg italic text-yellow-500 text-start mb-1 min-[2000px]:text-5xl`}
+                >
+                  What's your must have crystals recommendation?
+                </h1>
 
-              <p className='font-light lg:font-normal min-[2000px]:text-4xl'>
-                The true purpose of crystals is to help release energies that do 
-                not belong to us, restoring balance and clarity to the spirit. I 
-                often recommend Amethyst for absorbing negativity, <strong>Clear Quartz </strong> 
-                for transforming that energy into positivity, <strong>Rose Quartz </strong> for 
-                fostering calm and emotional clarity, and <strong>Black Tourmaline </strong>
-                or <strong>Black  Obsidian </strong> for powerful protection. Together, these form one 
-                of the most potent and harmonious energy combinations in crystal healing.
-              </p>
-            </li>
-
-          </ul>
-            
+                <p className='font-light lg:font-normal min-[2000px]:text-4xl'>
+                  The true purpose of crystals is to help release energies that
+                  do not belong to us, restoring balance and clarity to the
+                  spirit. I often recommend Amethyst for absorbing negativity,{' '}
+                  <strong>Clear Quartz </strong>
+                  for transforming that energy into positivity,{' '}
+                  <strong>Rose Quartz </strong> for fostering calm and emotional
+                  clarity, and <strong>Black Tourmaline </strong>
+                  or <strong>Black Obsidian </strong> for powerful protection.
+                  Together, these form one of the most potent and harmonious
+                  energy combinations in crystal healing.
+                </p>
+              </li>
+            </ul>
           </div>
         </section>
 
@@ -206,13 +230,14 @@ export default async function About(props: {
           />
 
           <p className='font-light lg:font-normal min-[2000px]:text-4xl text-center'>
-            At Zen Stones, our intention is to offer gentle guidance and support 
-            to each customer in discovering the crystals that best align with their 
-            personal journey. We aim to help individuals find the stones that may 
-            assist in easing emotional challenges, clearing energetic blockages, 
-            and restoring inner balance. Every experience is approached with care 
-            and mindfulness, and seeing a customer's genuine smile as they connect 
-            with their chosen crystal is the greatest fulfillment of our work.
+            At Zen Stones, our intention is to offer gentle guidance and support
+            to each customer in discovering the crystals that best align with
+            their personal journey. We aim to help individuals find the stones
+            that may assist in easing emotional challenges, clearing energetic
+            blockages, and restoring inner balance. Every experience is
+            approached with care and mindfulness, and seeing a customer's
+            genuine smile as they connect with their chosen crystal is the
+            greatest fulfillment of our work.
           </p>
         </section>
 

@@ -148,29 +148,13 @@ export async function createType(prevState: any, formData: FormData) {
   // destructuring the form field values from the validated data
   const { category, productType } = validatedFields.data;
 
-  // awaiting the promise returned from the function
-  const baseUrl = await getBaseUrl();
-
-  // uploading images to S3 AWS with the dynamic segment being the photo files
-  const res = await fetch(`${baseUrl}/api/s3-upload/featuredPhoto`, {
-    method: 'POST',
-    body: formData,
-  });
-
-  const data = await res.json();
-
-  // if the data wasn't successfuly uploaded
-  if (!data.success) {
-    throw new Error('Images were not uploaded to S3');
-  }
-
-  // copy of the only image uploaded in S3 for this productType
-  const images = data.files;
+  // getting the type featured image data
+  const images = await callS3API('featuredPhoto', formData);
 
   // adding the new productType to the db
   await sql`
-    INSERT INTO types (product_type, parent_category, featured_image)
-    VALUES (${productType}, ${category}, ${images[0].url});
+    INSERT INTO types (product_type, parent_category, featured_image, image_key)
+    VALUES (${productType}, ${category}, ${images[0].url}, ${`${images[0].folder}/${images[0].name}`});
   `;
 
   // refresh the page and send a product added flag to show user feedback
@@ -199,6 +183,16 @@ export async function deleteType(prevState: any, formData: FormData) {
   // deleting type
   try {
 
+    // getting the type id
+    const typeId = await sql`
+      SELECT id FROM "types" 
+      WHERE product_type = ${type}
+    `
+
+    // deleting feature photos
+    await deleteFilesFromS3(typeId[0].id, true);
+
+    // deleting product type from db
     await sql`
       DELETE FROM "types"
       WHERE product_type = ${type};
@@ -207,7 +201,6 @@ export async function deleteType(prevState: any, formData: FormData) {
   } catch (error) {
     throw new Error(`Couldn't delete type. ${error}`)
   }
-
 
   // refresh the page and send a type deleted flag to show user feedback
   redirect('/admin-space/manage-types?productType_deleted=true');
@@ -432,7 +425,7 @@ export async function deleteProduct(id: string) {
     // awaiting the function that deletes all images from the product in S3
     // this needs to happen first so the query doesn't
     // delete the images before we look for the image keys
-    await deleteFilesFromS3(id);
+    await deleteFilesFromS3(id, false);
 
     // delete query
     const result = await sql`
@@ -469,7 +462,7 @@ async function getUserFromDb(
 // getting the product type that user created
 export async function getTypes() {
   const types = await sql<productType[]>`
-    SELECT * FROM types -- refreshed plan
+    SELECT * FROM types -- refreshed plano
   `;
   return types;
 }
@@ -506,16 +499,30 @@ export async function uploadFileToS3(
   }
 }
 
-async function deleteFilesFromS3(productId: string) {
+async function deleteFilesFromS3(id: string, isType: boolean) {
   try {
 
-    // getting all image S3 keys
-    const images = await sql<{ key: string }[]>`
-      SELECT key FROM product_images WHERE product_id = ${productId}
-    `;
-    const keys = images.map(img => img.key);
+    // deletion for products
+    if (!isType) {
+      // getting all image S3 keys
+      const images = await sql<{ key: string }[]>`
+        SELECT key FROM product_images WHERE product_id = ${id}
+      `;
+      const keys = images.map(img => img.key);
+  
+      for (const key of keys) {
+        await s3ClientInstance.send(new DeleteObjectCommand({
+          Bucket: process.env.AWS_S3_BUCKET_NAME,
+          Key: key
+        }));
+      } 
+    } else { // deletion for types
+      // getting all image S3 keys
+      const typeKey = await sql<{ image_key: string }[]>`
+        SELECT image_key FROM types WHERE id = ${id}
+      `;
+      const key = typeKey[0].image_key;
 
-    for (const key of keys) {
       await s3ClientInstance.send(new DeleteObjectCommand({
         Bucket: process.env.AWS_S3_BUCKET_NAME,
         Key: key
