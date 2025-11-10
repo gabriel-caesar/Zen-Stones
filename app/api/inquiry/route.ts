@@ -25,7 +25,7 @@ export async function POST(req: Request) {
 
   const { data, error } = await resend.emails.send({
     from: 'noreply@zenstonesridgewood.com',
-    to: 'zenstones@yahoo.com',
+    to: 'gardenerpaolavet@gmail.com',
     subject: 'Customer Inquiry',
     replyTo: email,
     react: InquiryEmail({name, title, inquiry, email, product}),
