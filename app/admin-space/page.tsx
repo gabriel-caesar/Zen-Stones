@@ -1,6 +1,5 @@
 import MainQueryProduct from '../ui/navbar/MainQueryProduct';
 import CardOption from '../ui/adminspace/CardOption';
-import { Box, FileBadge, FileBox, LogOut } from 'lucide-react';
 import { fetchSearchedProducts } from '../lib/data';
 import { Metadata } from 'next';
 
