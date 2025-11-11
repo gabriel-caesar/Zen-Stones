@@ -45,13 +45,13 @@ export default async function ManageMainPage(props: {
   const mainQueryProducts = await fetchSearchedProducts(mainquery, currentPage);
 
   return (
-    <>
+    <div className='flex items-center justify-center'>
       <MainQueryProduct products={mainQueryProducts} query={mainquery} />
       <div
         id='manage-main-page-wrapper'
         className='
         lg:flex-row lg:items-start
-        w-full flex flex-col items-center justify-center py-10 
+        w-full md:w-3/4 flex flex-col items-center justify-center py-10 
       '
       >
         <FeedbackDialog
@@ -88,6 +88,7 @@ export default async function ManageMainPage(props: {
           <FeaturedSearch products={products} featuredProducts={featuredProducts} query={query} />
         </div>
 
+
         <div
           id='wrapper-products-types'
           className='flex items-center justify-center flex-col w-full'
@@ -96,6 +97,6 @@ export default async function ManageMainPage(props: {
           <FeaturedCollection collectionProducts={collectionProducts} />
         </div>
       </div>
-    </>
+    </div>
   );
 }

@@ -72,7 +72,8 @@ export default function FeaturedSearch({
     }
 
     // reloading the page entirely so the change reflects in the UI
-    window.location.href = '/admin-space/manage-main-page?added_collection=true';
+    window.location.href =
+      '/admin-space/manage-main-page?added_collection=true';
   }
 
   // checks for the allowance of feature action
@@ -95,14 +96,20 @@ export default function FeaturedSearch({
 
   // makes sure that unfeatured products array stays up to date
   useEffect(
-    () => setUnfeaturedProducts(products.filter((p) => !p.featured_section && !p.is_collection)),
+    () =>
+      setUnfeaturedProducts(
+        products.filter((p) => !p.featured_section && !p.is_collection)
+      ),
     [query, products]
   );
 
   return (
     <div
       id='featured-search-container'
-      className='bg-neutral-200 rounded-lg p-2 shadow-md w-11/12'
+      className={`
+        bg-neutral-200 rounded-lg p-2 shadow-md w-11/12
+        flex flex-col items-center justify-start overflow-hidden
+      `}
     >
       <h1 className='flex items-center justify-center text-center mb-3 font-bold'>
         Select two featured products
@@ -120,11 +127,7 @@ export default function FeaturedSearch({
       <div
         id='search-results-container'
         className={`
-          ${
-            products.length <= 0
-              ? 'flex'
-              : 'md:grid md:grid-cols-2 xl:grid-cols-3 md:place-content-center md:place-items-center md:gap-4'
-          }
+          max-h-230 overflow-y-auto my-2 px-4 lg:px-0
         `}
       >
         {unfeaturedProducts.length > 0 ? (
@@ -134,10 +137,8 @@ export default function FeaturedSearch({
                 id='searched-card'
                 key={p.id}
                 className={`
-                  ${p.featured_section ? 'bg-neutral-200' : 'bg-white'}
-                  shadow-md max-h-[450px]
-                  flex flex-col items-center justify-center my-6 pb-6
-                  rounded-lg border-1 border-neutral-400 overflow-hidden
+                  ${p.featured_section ? 'bg-neutral-200' : 'bg-white'} my-6 pb-6 mx-auto
+                  rounded-2xl bg-white border-1 border-neutral-400 shadow-md lg:w-11/12 relative overflow-hidden mb-3
                 `}
               >
                 <Carousel product={p} height='h-[272px]' />
@@ -312,7 +313,7 @@ export default function FeaturedSearch({
                           onClick={() => {
                             if (!loading) {
                               handleCollection(p);
-                              }
+                            }
                           }}
                         >
                           {loading ? (
@@ -361,7 +362,7 @@ export default function FeaturedSearch({
             );
           })
         ) : (
-          <p className='text-neutral-500 w-full flex flex-col items-center justify-center my-6'>
+          <p className='text-neutral-500 w-full flex flex-col items-center justify-center my-6 text-center'>
             No products found or no query done
             <BookmarkXIcon strokeWidth={1.5} className='text-neutral-500' />
           </p>

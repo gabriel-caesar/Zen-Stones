@@ -66,7 +66,7 @@ export default function FeaturedProducts({
 
       <div
         id='chosen-featured-items-container'
-        className='flex items-center justify-center flex-col w-full md:grid md:grid-cols-2 md:gap-4 md:place-items-center'
+        className='flex items-center justify-center flex-col w-full'
       >
         {featuredProducts.length > 0 ? (
           featuredProducts.map((p) => {
@@ -75,8 +75,8 @@ export default function FeaturedProducts({
                 key={p.id}
                 id='featured-product-card'
                 className='
-                  rounded-lg overflow-hidden shadow-md w-3/4 flex flex-col 
-                  items-center justify-center relative mb-3 bg-white md:h-[360px]
+                  rounded-lg overflow-hidden shadow-md w-11/12 flex flex-col 
+                  items-center justify-start relative mb-8 bg-white md:h-[460px]
                 '
               >
                 <Carousel product={p} />
@@ -200,7 +200,7 @@ export default function FeaturedProducts({
             );
           })
         ) : (
-          <p className='text-neutral-500 w-full flex flex-col items-center justify-center my-6'>
+          <p className='text-neutral-500 w-full flex flex-col items-center justify-center my-6 text-center'>
             No featured products found...
             <VectorSquare strokeWidth={1.5} className='text-neutral-500 mt-3' />
           </p>

@@ -1,6 +1,6 @@
 import MainQueryProduct from '../ui/navbar/MainQueryProduct';
 import CardOption from '../ui/adminspace/CardOption';
-import { Box, FileBadge, FileBox, Loader2 } from 'lucide-react';
+import { Box, FileBadge, FileBox, LogOut } from 'lucide-react';
 import { fetchSearchedProducts } from '../lib/data';
 import { Metadata } from 'next';
 
@@ -39,10 +39,10 @@ export default async function AdminSpace(props: {
           id='card-options-wrapper'
           className='grid lg:grid-cols-2 gap-8 place-items-center w-full h-full mb-10'
         >
-          <CardOption href='/admin-space/manage-types' Icon={Box} text='Manage Types'/>
-          <CardOption href='/admin-space/manage-products' Icon={FileBox} text='Manage Products'/>
-          <CardOption href='/admin-space/manage-main-page' Icon={FileBadge} text='Manage Main Page'/>
-          <CardOption href='#' Icon={Loader2} text='To Be Launched...'/>
+          <CardOption href='/admin-space/manage-types' Icon='box' text='Manage Types'/>
+          <CardOption href='/admin-space/manage-products' Icon='filebox' text='Manage Products'/>
+          <CardOption href='/admin-space/manage-main-page' Icon='filebadge' text='Manage Main Page'/>
+          <CardOption Icon='logout' text='Log out' logOut={true} />
         </div>
       </div>
     </>

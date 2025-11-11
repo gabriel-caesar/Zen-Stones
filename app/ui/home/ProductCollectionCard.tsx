@@ -37,7 +37,7 @@ export function ProductCollectionCard({
             hover:bg-black hover:text-white flex items-center justify-center transition-all'
             id='inquiry-product-button'
             aria-label='inquiry-product-button'
-            href={'/inquiry'}
+            href={`/inquiry/${collectionProducts.id}`}
           >
             Inquiry <Mail size={20} strokeWidth={1.5} className='ml-2' />
           </Link>
