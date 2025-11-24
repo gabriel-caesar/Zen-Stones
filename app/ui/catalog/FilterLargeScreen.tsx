@@ -9,7 +9,7 @@ import {
 } from '@/app/lib/data';
 import Accordion from './Accordion';
 import { FrequencyArray } from '@/app/lib/types';
-import { Suspense, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useProductsContext } from './ProductsContext';
 import { makeArray } from '@/app/lib/utils';
 

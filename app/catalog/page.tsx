@@ -1,4 +1,4 @@
-import { fetchFilteredProducts, fetchSearchedProducts } from '@/app/lib/data';
+import { fetchFilteredProducts, fetchProductCount, fetchSearchedProducts } from '@/app/lib/data';
 import { ProductsContextWrapper } from '../ui/catalog/ProductsContext';
 import CatalogWrapper from '@/app/ui/catalog/CatalogWrapper';
 import MainQueryProduct from '@/app/ui/navbar/MainQueryProduct';
@@ -57,6 +57,7 @@ export default async function Catalog({
     properties
   ]
 
+  // actual array of products to be showcased on catalog
   const filteredProducts = await fetchFilteredProducts({
     category: makeArray(category),
     type: makeArray(type),
@@ -69,25 +70,19 @@ export default async function Catalog({
     limit: ITEMS_PER_PAGE,
   });
 
-  // used to "unlimit" the rows coming from the query, so the number
-  // of products being retrieved are right
-  const fetchedProductsUnlimited = await fetchFilteredProducts({
+  // fetching the filtered product count for pagination and UI feedback
+  const fetchedProductsCount = await fetchProductCount({
     category: makeArray(category),
     type: makeArray(type),
     material: makeArray(material),
     properties: makeArray(properties),
     max: max,
     min: min,
-    indication: makeArray(indication),
-    page: page,
-    limit: 100,
+    indication: makeArray(indication)
   });
 
-  // covering edge cases for when both categories
-  // are selected or not selected at once
-  // const categoryCondition = Array.isArray(category) ? undefined : category            
-  // const productCount = await fetchProductCount(categoryCondition);
-  const productCount = fetchedProductsUnlimited.length
+  // product count variable
+  const productCount = fetchedProductsCount[0].count;
 
   // total pages based on how many items were fetched from the db
   const totalPages = Math.ceil(Number(productCount) / ITEMS_PER_PAGE);

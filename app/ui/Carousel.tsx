@@ -3,6 +3,7 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { ProductWithImages } from '../lib/types';
 import { useState } from 'react';
+import { PiImageBrokenDuotone } from 'react-icons/pi';
 
 export default function Carousel({
   product,
@@ -33,13 +34,24 @@ export default function Carousel({
         className={`flex transition-transform duration-500 relative ${height} ${width}`}
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
       >
-        {product.urls.map((url, i) => (
-          <img
-            key={i}
-            src={url}
-            className={`w-full flex-shrink-0 object-cover`}
-          />
-        ))}
+        {product.urls[0] !== 'NULL'
+          ? product.urls.map((url, i) => (
+              <img
+                key={i}
+                src={url}
+                className={`w-full flex-shrink-0 object-cover`}
+              />
+            ))
+          : (
+            <div
+              id='missing-image-container'
+              aria-label='missing-image-container'
+              className='w-full flex flex-col text-center items-center justify-center bg-neutral-400 font-bold'
+            >
+              <PiImageBrokenDuotone className='text-5xl' />
+              No images were addded
+            </div>
+          )}
       </div>
 
       <button

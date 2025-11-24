@@ -13,6 +13,7 @@ export default function InputImage({
   setError,
   uploadedImageObjects,
   setUploadedImageObjects,
+  isFeaturing,
 }: {
   state: any;
   name: string;
@@ -21,6 +22,7 @@ export default function InputImage({
   setError?: React.Dispatch<SetStateAction<boolean>>
   uploadedImageObjects: File[]
   setUploadedImageObjects: React.Dispatch<SetStateAction<File[]>>
+  isFeaturing?: boolean;
 }) {
 
   // splits the image name from the url
@@ -53,7 +55,7 @@ export default function InputImage({
     // setting the array of files to the state
     setUploadedImageObjects(filesArray);
 
-    // Keep old images that weren’t removed yet
+    // keep old images that weren’t removed yet
     const stillExistingOldImages = existingImages || [];
 
     setAllImages([...filesArray, ...stillExistingOldImages]);    
@@ -109,7 +111,7 @@ export default function InputImage({
     <section className='w-full' id='image-section'>
       <label htmlFor='product-photo-id' className='flex mb-1 ml-1'>
         <Image strokeWidth={1.5} className='mr-2' />
-        Product image
+        {isFeaturing ? 'Featured image' : 'Product image'}
       </label>
       <div className='flex flex-col items-center p-2 bg-neutral-300 rounded-lg cursor-pointer w-full'>
         <div
@@ -121,7 +123,7 @@ export default function InputImage({
             p-1 rounded-lg
             flex w-full items-center justify-between hover:bg-neutral-400 transition-all
           `}
-          onClick={() => document.getElementById('product-photo-id')?.click()}
+          onClick={() => document.getElementById(name)?.click()}
         >
           <span className='rounded-lg bg-black text-white px-2'>
             Choose file
@@ -142,7 +144,8 @@ export default function InputImage({
             ${
               allImages && allImages.length === 0 ? 'hidden' : ''
             }
-            grid grid-cols-1 md:grid-cols-2 gap-2
+            ${isFeaturing ? 'flex items-center justify-center' : 'grid grid-cols-1 md:grid-cols-2 gap-2'}
+            
           `}
         >
           <>
@@ -157,13 +160,13 @@ export default function InputImage({
                     alt={`${img.name}-image-preview`}
                     id={`${img.name}-image-preview`}
                     aria-label={`${img.name}-image-preview`}
-                    className='w-full border-1 border-neutral-400 rounded-lg shadow-lg mb-1 object-cover'
+                    className='w-full md:w-1/2 border-1 border-neutral-400 rounded-lg shadow-lg mb-1 object-cover'
                   />
-                  <span className='flex gap-2 rounded-lg p-1 text-center bg-neutral-500'>
+                  <span className={`flex gap-2 rounded-lg p-1 text-center bg-neutral-500`}>
                     <button
                       id='move-image-left'
                       aria-label='move-image-left'
-                      className='hover:cursor-pointer rounded-md border-transparent hover:text-black hover:bg-white px-2 text-white transition-all'
+                      className={`hover:cursor-pointer rounded-md border-transparent hover:text-black hover:bg-white px-2 text-white transition-all ${isFeaturing ? 'hidden' : 'flex'}`}
                       onClick={() => moveImage('left', i)}
                       type='button'
                     >
@@ -175,7 +178,7 @@ export default function InputImage({
                     <button
                       id='move-image-right'
                       aria-label='move-image-right'
-                      className='hover:cursor-pointer rounded-md border-transparent hover:text-black hover:bg-white px-2 text-white transition-all'
+                      className={`hover:cursor-pointer rounded-md border-transparent hover:text-black hover:bg-white px-2 text-white transition-all ${isFeaturing ? 'hidden' : 'flex'}`}
                       onClick={() => moveImage('right', i)}
                       type='button'
                     >
@@ -242,9 +245,9 @@ export default function InputImage({
         <input
           type='file'
           accept='image/*'
-          multiple // accept multiple files
+          multiple={isFeaturing ? false : true} // accept multiple files
           name={name}
-          id='product-photo-id'
+          id={name}
           className='hidden hover:cursor-pointer'
           aria-label='product-image-input'
           onChange={(e) => handleInputUpload(e)} // JS updates the file list under the hood

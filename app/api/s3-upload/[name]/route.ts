@@ -24,7 +24,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ nam
     const { name } = await params;
     // give us access from the input form data
     const formData = await request.formData();
-    // getting the input value with name === product-photo
+    // getting the input value with dynamic name prop
     const files = formData.getAll(name) as File[];
 
     const uploadedFiles: fileCopy[] = [];
@@ -43,7 +43,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ nam
       // here I am specifying what folder to include the images in S3
       const folderName = name === 'productPhoto' ? 'products' : 'featuredSubcategories';
 
-      // getting the filename back from the upload functino
+      // getting the filename back from the upload function
       const fileName = await uploadFileToS3(buffer, file.name, folderName, s3ClientInstance);
 
       // joining url with env files and dynamic params

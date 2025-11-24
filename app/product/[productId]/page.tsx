@@ -57,7 +57,7 @@ export default async function ProductPage({
             <ProductPageCarousel product={product} />
           </section>
 
-          <section id='card-features-section' className='p-2 md:p-0 lg:w-3/4'>
+          <section id='card-features-section' className='p-2 md:p-0 md:w-1/2 lg:w-3/4'>
             {/* Product name */}
             <div className='flex items-center justify-between w-full pr-2'>
               <h1 className='text-2xl md:text-2xl' aria-label='product-name'>

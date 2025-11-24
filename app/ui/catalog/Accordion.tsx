@@ -87,6 +87,9 @@ export default function Accordion({
       params.delete(text.toLowerCase(), term.toLowerCase());
     }
 
+    // if the user is not in the first page when filtering, return it to the main page so filter doesn't fail
+    const currentPage = params.get('page');
+    if (Number(currentPage) !== 1) params.delete('page');
     // updating the URL
     router.push(`${pathname}?${params.toString()}`);
   }
@@ -94,7 +97,7 @@ export default function Accordion({
   const handlePriceFilter = useDebouncedCallback((max: number, min: number) => {
     const params = new URLSearchParams(searchParams);
 
-    if (max && min) {
+    if (max >= 0 && min >= 0) {
       // turning the max and min numbers into str
       const stringifiedMax = String(max);
       const stringifiedMin = String(min);
@@ -103,6 +106,10 @@ export default function Accordion({
       params.set('max', stringifiedMax);
       params.set('min', stringifiedMin);
     }
+    // if the user is not in the first page when filtering, return it to the main page so filter doesn't fail
+    const currentPage = params.get('page');
+    if (Number(currentPage) !== 1) params.delete('page');
+    // update the URL
     router.push(`${pathname}?${params.toString()}`);
   }, 800);
 

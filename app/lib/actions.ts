@@ -1,8 +1,24 @@
 'use server';
 
-import { fileCopy, Product, productType, ProductWithImages, User } from './types';
-import { DeleteObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { inquirySchema, loginSchema, productSchema, productTypeSchema } from './schemas';
+import {
+  fileCopy,
+  Product,
+  productType,
+  ProductWithImages,
+  User,
+} from './types';
+import {
+  DeleteObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
+import {
+  inquirySchema,
+  loginSchema,
+  productSchema,
+  productTypeSchema,
+  editTypeSchema,
+} from './schemas';
 import { createSession, deleteSession } from './session';
 import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
@@ -12,10 +28,12 @@ import z from 'zod';
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
 // checking if the AWS keys are existent
-if (!process.env.AWS_S3_REGION || 
-    !process.env.AWS_S3_ACCESS_KEY_ID || 
-    !process.env.AWS_S3_SECRET_ACCESS_KEY) {
-  throw new Error("Missing AWS S3 environment variables");
+if (
+  !process.env.AWS_S3_REGION ||
+  !process.env.AWS_S3_ACCESS_KEY_ID ||
+  !process.env.AWS_S3_SECRET_ACCESS_KEY
+) {
+  throw new Error('Missing AWS S3 environment variables');
 }
 
 // instantiating S3 Client
@@ -24,9 +42,8 @@ const s3ClientInstance = new S3Client({
   credentials: {
     accessKeyId: process.env.AWS_S3_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_S3_SECRET_ACCESS_KEY,
-  }
+  },
 });
-
 
 // gets base url dynamically
 export async function getBaseUrl() {
@@ -76,67 +93,70 @@ export async function createProduct(prevState: any, formData: FormData) {
     featured_material,
   } = validatedFields.data;
 
-  // calls the AWS S3 API that stores the image object 
+  // calls the AWS S3 API that stores the image object
   // in the cloud and return the url to be stored in the DB
   const images = await callS3API('productPhoto', formData);
 
-  // inserting new product into database
-  const productId = await sql<Product[]>`
-    INSERT INTO products (
-      name,
-      category, 
-      product_type, 
-      price, 
-      properties, 
-      material, 
-      rarity, 
-      weight, 
-      size
-    )
-    VALUES (
-      ${name}, 
-      ${category}, 
-      ${productType}, 
-      ${price}, 
-      ${properties}, 
-      ${materials}, 
-      ${rarity}, 
-      ${weight}, 
-      ${size}
-    )
-    RETURNING *;
-  `;
-
-  // splitting into two queries since Postgres misinterpret over 9
-  await sql`
-    UPDATE products
-    SET
-      description = ${description},
-      meaning = ${meaning},
-      indicated_for = ${indications},
-      featured_material = ${featured_material}
-    WHERE id = ${productId[0].id};
-  `;
-
-  // inserting images inside the product images table
-  for (let i = 0; i < images.length; i++) {
-    await sql`
-      INSERT INTO product_images (product_id, url, position, key)
-      VALUES (${productId[0].id}, ${images[i].url}, ${i}, ${`${images[i].folder}/${images[i].name}`});
+  try {
+    // inserting new product into database
+    const productId = await sql<Product[]>`
+      INSERT INTO products (
+        name,
+        category, 
+        product_type, 
+        price, 
+        properties, 
+        material, 
+        rarity, 
+        weight, 
+        size
+      )
+      VALUES (
+        ${name}, 
+        ${category}, 
+        ${productType}, 
+        ${price}, 
+        ${properties}, 
+        ${materials}, 
+        ${rarity}, 
+        ${weight}, 
+        ${size}
+      )
+      RETURNING *;
     `;
+
+    // splitting into two queries since Postgres misinterpret over 9
+    await sql`
+      UPDATE products
+      SET
+        description = ${description},
+        meaning = ${meaning},
+        indicated_for = ${indications},
+        featured_material = ${featured_material}
+      WHERE id = ${productId[0].id};
+    `;
+
+    // inserting images inside the product images table
+    let productURL;
+    for (let i = 0; i < images.length; i++) {
+      productURL = await sql<{ url: string }[]>`
+        INSERT INTO product_images (product_id, url, position, key)
+        VALUES (${productId[0].id}, ${images[i].url}, ${i}, ${`${images[i].folder}/${images[i].name}`});
+      `;
+    }
+
+  } catch (error) {
+    throw new Error(`Couldn't create product. ${error}`)
   }
 
-  // refresh the page and send a product added flag to show user feedback
   redirect('/admin-space/manage-products?product_added=true');
 }
 
 export async function createType(prevState: any, formData: FormData) {
   // validating user input
-  const validatedFields = productTypeSchema.safeParse({
-    // This ensures `featuredPhoto` is an array, as required by the Zod schema
-    ...Object.fromEntries(formData.entries()),
-    featuredPhoto: formData.getAll('featuredPhoto'),
-  });
+  const validatedFields = productTypeSchema.safeParse(
+    Object.fromEntries(formData.entries())
+  );
 
   // if the parsing wasn't successful, return the errors
   if (!validatedFields.success) {
@@ -161,14 +181,78 @@ export async function createType(prevState: any, formData: FormData) {
   redirect('/admin-space/manage-types?productType_added=true');
 }
 
-export async function deleteType(prevState: any, formData: FormData) {
+export async function editType(prevState: any, formData: FormData) {
+  const validatedFields = editTypeSchema.safeParse(
+    Object.fromEntries(formData.entries())
+  );
 
-  const validatedFields = z.object({
-    type: z.string()
-    .refine((type) => type !== 'Choose one option...', {
-      message: 'You have to choose one option',
-    }),
-  }).safeParse({ type: formData.get('productType') });
+  // if the parsing wasn't successful, return the errors
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+    };
+  }
+
+  const { category, productType, newTypeName, newFeaturedPhoto } =
+    validatedFields.data;
+
+  try {
+    // getting the type id
+    const typeIdQuery = await sql<{ id: string }[]>`
+      SELECT id FROM "types" 
+      WHERE product_type = ${productType} AND
+      parent_category = ${category}
+    `;
+    const typeId = typeIdQuery[0].id;
+
+    if (productType !== newTypeName) {
+      // update the types table
+      await sql`
+        UPDATE "types"
+        SET product_type = ${newTypeName}
+        WHERE id = ${typeId}
+      `;
+
+      // update all products with that type
+      await sql`
+        UPDATE products
+        SET product_type = ${newTypeName}
+        WHERE product_type = ${productType}
+      `;
+    }
+
+    // if there is a image being uploaded
+    if (newFeaturedPhoto!.size > 0) {
+      // deleting the current featured image
+      await deleteFilesFromS3(typeId, true);
+
+      // uploading the new featured image
+      const image = await callS3API('newFeaturedPhoto', formData);
+
+      // updating the db values for the new featured image
+      await sql`
+        UPDATE "types"
+        SET 
+          featured_image = ${image[0].url},
+          image_key = ${`${image[0].folder}/${image[0].name}`}
+        WHERE id = ${typeId};
+      `;
+    }
+  } catch (error) {
+    throw new Error(`Couldn't edit type. ${error}`);
+  }
+
+  redirect('/admin-space/manage-types?productType_edited=true')
+}
+
+export async function deleteType(prevState: any, formData: FormData) {
+  const validatedFields = z
+    .object({
+      type: z.string().refine((type) => type !== 'Choose one option...', {
+        message: 'You have to choose one option',
+      }),
+    })
+    .safeParse({ type: formData.get('productType') });
 
   // if the parsing wasn't successful, return the errors
   if (!validatedFields.success) {
@@ -182,12 +266,11 @@ export async function deleteType(prevState: any, formData: FormData) {
 
   // deleting type
   try {
-
     // getting the type id
     const typeId = await sql`
       SELECT id FROM "types" 
       WHERE product_type = ${type}
-    `
+    `;
 
     // deleting feature photos
     await deleteFilesFromS3(typeId[0].id, true);
@@ -196,10 +279,9 @@ export async function deleteType(prevState: any, formData: FormData) {
     await sql`
       DELETE FROM "types"
       WHERE product_type = ${type};
-    `
-
+    `;
   } catch (error) {
-    throw new Error(`Couldn't delete type. ${error}`)
+    throw new Error(`Couldn't delete type. ${error}`);
   }
 
   // refresh the page and send a type deleted flag to show user feedback
@@ -240,7 +322,6 @@ export async function login(prevState: any, formData: FormData) {
 }
 
 export async function editProduct(prevState: any, formData: FormData) {
-
   // validating the edit product form
   const validatedFields = productSchema.safeParse({
     ...Object.fromEntries(formData.entries()),
@@ -273,10 +354,10 @@ export async function editProduct(prevState: any, formData: FormData) {
     featured_material,
   } = validatedFields.data;
 
-  // calls the AWS S3 API that stores the image object 
+  // calls the AWS S3 API that stores the image object
   // in the cloud and return the url to be stored in the DB
   const images = await callS3API('productPhoto', formData);
-  
+
   // validating the id
   const validate = z
     .object({ id: z.string({ message: 'Product ID is missing' }) })
@@ -284,7 +365,7 @@ export async function editProduct(prevState: any, formData: FormData) {
 
   // if the parsing wasn't successful, return the errors
   if (!validate.success) {
-    console.log(validate.error)
+    console.log(validate.error);
     return {
       errors: validate.error.flatten().fieldErrors,
     };
@@ -294,8 +375,7 @@ export async function editProduct(prevState: any, formData: FormData) {
   const { id } = validate.data;
 
   try {
-
-     // updating all the properties of the product
+    // updating all the properties of the product
     updatedProductRow(
       id,
       name,
@@ -311,12 +391,11 @@ export async function editProduct(prevState: any, formData: FormData) {
       size,
       productType,
       featured_material
-    )
-
+    );
   } catch (error) {
-    throw new Error(`Couldn't finaliz editProduct. ${error}`)
+    throw new Error(`Couldn't finalize editProduct. ${error}`);
   }
- 
+
   // if user uploaded any new image
   if (images.length > 0) {
     // inserting images inside the product images table
@@ -333,7 +412,6 @@ export async function editProduct(prevState: any, formData: FormData) {
 }
 
 export async function sendInquiry(prevState: any, formData: FormData) {
-
   // awaiting the promise returned from the function
   const baseUrl = await getBaseUrl();
 
@@ -354,7 +432,6 @@ export async function sendInquiry(prevState: any, formData: FormData) {
   const { name, title, inquiry, email, product_id } = validatedFields.data;
 
   try {
-
     // calls the api which feeds the email
     await fetch(`${baseUrl}/api/inquiry`, {
       method: 'POST',
@@ -364,11 +441,10 @@ export async function sendInquiry(prevState: any, formData: FormData) {
         inquiry: inquiry,
         email: email,
         product_id: product_id,
-      })
-    })
-
+      }),
+    });
   } catch (error) {
-    throw new Error(`Couldn't send inquiry. ${error}`)
+    throw new Error(`Couldn't send inquiry. ${error}`);
   }
 
   // redirect the user to the same address but with a feedback params
@@ -391,10 +467,8 @@ async function updatedProductRow(
   product_type: string,
   featured_material: string
 ) {
-
   try {
-
-     await sql`
+    await sql`
       UPDATE products
       SET 
         name = ${name},
@@ -412,16 +486,14 @@ async function updatedProductRow(
         featured_material = ${featured_material}
       WHERE id = ${id};
     `;
-
   } catch (error) {
-    throw new Error(`Couldn't update the product. ${error}`)
+    throw new Error(`Couldn't update the product. ${error}`);
   }
 }
 
 export async function deleteProduct(id: string) {
   // delete the product row
   try {
-
     // awaiting the function that deletes all images from the product in S3
     // this needs to happen first so the query doesn't
     // delete the images before we look for the image keys
@@ -431,15 +503,14 @@ export async function deleteProduct(id: string) {
     const result = await sql`
       DELETE FROM products
       WHERE products.id = ${id}
-    `
+    `;
 
     // checking if the delete was through
     if (result.count === 0) {
-      throw new Error("No product found with that ID");
+      throw new Error('No product found with that ID');
     }
-
   } catch (error) {
-    throw new Error(`Couldn't delete your product. ${error}`)
+    throw new Error(`Couldn't delete your product. ${error}`);
   }
 }
 
@@ -501,42 +572,47 @@ export async function uploadFileToS3(
 
 async function deleteFilesFromS3(id: string, isType: boolean) {
   try {
-
     // deletion for products
     if (!isType) {
       // getting all image S3 keys
       const images = await sql<{ key: string }[]>`
         SELECT key FROM product_images WHERE product_id = ${id}
       `;
-      const keys = images.map(img => img.key);
-  
+      const keys = images.map((img) => img.key);
+
       for (const key of keys) {
-        await s3ClientInstance.send(new DeleteObjectCommand({
-          Bucket: process.env.AWS_S3_BUCKET_NAME,
-          Key: key
-        }));
-      } 
-    } else { // deletion for types
+        await s3ClientInstance.send(
+          new DeleteObjectCommand({
+            Bucket: process.env.AWS_S3_BUCKET_NAME,
+            Key: key,
+          })
+        );
+      }
+    } else {
+      // deletion for types
       // getting all image S3 keys
       const typeKey = await sql<{ image_key: string }[]>`
         SELECT image_key FROM types WHERE id = ${id}
       `;
       const key = typeKey[0].image_key;
 
-      await s3ClientInstance.send(new DeleteObjectCommand({
-        Bucket: process.env.AWS_S3_BUCKET_NAME,
-        Key: key
-      }));
+      await s3ClientInstance.send(
+        new DeleteObjectCommand({
+          Bucket: process.env.AWS_S3_BUCKET_NAME,
+          Key: key,
+        })
+      );
     }
-
   } catch (error) {
-    throw new Error(`Couldn't delete images in S3. ${error}`)
+    throw new Error(`Couldn't delete images in S3. ${error}`);
   }
 }
 
-export async function deleteSingleImageFile(productId: string | undefined, url: string) {
+export async function deleteSingleImageFile(
+  productId: string | undefined,
+  url: string
+) {
   try {
-
     if (productId) {
       // get the S3 key
       const query = await sql<{ key: string }[]>`
@@ -548,10 +624,12 @@ export async function deleteSingleImageFile(productId: string | undefined, url: 
       const key = query[0].key;
 
       // call the function to delete the image in the S3
-      await s3ClientInstance.send(new DeleteObjectCommand({
-        Bucket: process.env.AWS_S3_BUCKET_NAME,
-        Key: key
-      }));
+      await s3ClientInstance.send(
+        new DeleteObjectCommand({
+          Bucket: process.env.AWS_S3_BUCKET_NAME,
+          Key: key,
+        })
+      );
 
       // delete the image in the db
       await sql`
@@ -560,12 +638,10 @@ export async function deleteSingleImageFile(productId: string | undefined, url: 
         url = ${url} AND
         key = ${key};
       `;
-    } else { // error occurred with product id
-      return
+    } else {
+      // error occurred with product id
+      return;
     }
-
-    
-
   } catch (error) {
     throw new Error(`Couldn't delete image in S3. ${error}`);
   }
@@ -575,11 +651,12 @@ async function callS3API(endpoint: string, formData: FormData) {
   // awaiting the promise returned from the function
   const baseUrl = await getBaseUrl();
 
+  // getting all files (even if it's only one) and formatting into an array
   const testFormData = formData.getAll(endpoint);
 
   // if no image was uploaded (for the edit form case)
   if (testFormData.length <= 0) {
-    return []
+    return [];
   }
 
   // uploading images to S3 AWS
@@ -611,12 +688,12 @@ export async function featurizeProduct(id: string) {
       SET featured_section = TRUE
       WHERE id = ${id}
       RETURNING id
-    `
+    `;
 
     // if result is returning something, it means it went through
-    return result.length > 0
+    return result.length > 0;
   } catch (error) {
-    throw new Error(`Couldn't featurize this product. ${error}`)
+    throw new Error(`Couldn't featurize this product. ${error}`);
   }
 }
 
@@ -628,41 +705,37 @@ export async function unfeatureProduct(id: string) {
       SET featured_section = FALSE
       WHERE id = ${id}
       RETURNING id
-    `
+    `;
 
     // if result is returning something, it means it went through
-    return result.length > 0
+    return result.length > 0;
   } catch (error) {
-    throw new Error(`Couldn't unfeature this product. ${error}`)
+    throw new Error(`Couldn't unfeature this product. ${error}`);
   }
 }
 
 // adds a product to the main page collections
 export async function addProductToCollections(product: ProductWithImages) {
-  try { 
-
+  try {
     await sql`
       UPDATE products
       SET is_collection = TRUE
       WHERE id = ${product.id}
-    `
-
+    `;
   } catch (error) {
-    throw new Error(`Couldn't add product to collections. ${error}`)
+    throw new Error(`Couldn't add product to collections. ${error}`);
   }
 }
 
 // removes a product from the main page collections
 export async function removeProductFromCollections(product: ProductWithImages) {
-  try { 
-
+  try {
     await sql`
       UPDATE products
       SET is_collection = FALSE
       WHERE id = ${product.id}
-    `
-
+    `;
   } catch (error) {
-    throw new Error(`Couldn't remove product from collections. ${error}`)
+    throw new Error(`Couldn't remove product from collections. ${error}`);
   }
 }

@@ -47,6 +47,28 @@
 }
 
 /* ###################################################################################################################### */
+#card-features-wrapper::-webkit-scrollbar {
+  width: 6px;  
+}
+
+#card-features-wrapper::-webkit-scrollbar-track {
+  background: #c9c9c9;
+}
+
+#card-features-wrapper::-webkit-scrollbar-thumb {
+  background-color: #000;
+}
+
+#card-features-wrapper::-webkit-scrollbar-thumb:hover {
+  background-color: oklch(61.013% 0.12532 83.38);
+  cursor: grab;
+}
+
+#card-features-wrapper::-webkit-scrollbar-thumb:active {
+  cursor: grabbing;
+}
+
+/* ###################################################################################################################### */
 #content-wrapper::-webkit-scrollbar {
   width: 4px;  
 }

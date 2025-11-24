@@ -45,7 +45,7 @@ export default async function ManageMainPage(props: {
   const mainQueryProducts = await fetchSearchedProducts(mainquery, currentPage);
 
   return (
-    <div className='flex items-center justify-center'>
+    <div className='flex items-start justify-center'>
       <MainQueryProduct products={mainQueryProducts} query={mainquery} />
       <div
         id='manage-main-page-wrapper'

@@ -58,19 +58,19 @@ export default function MainQueryProduct({
             return (
               <div
                 key={product.id}
-                className='rounded-2xl bg-white border-1 border-neutral-400 shadow-md w-full h-[530px] md:h-auto md:w-full relative overflow-hidden mb-3'
+                className='rounded-2xl bg-white border-1 border-neutral-400 shadow-md w-full pb-3 relative overflow-hidden'
               >
                 
                 {/* Product item card */}
-                <div className='md:flex w-full md:h-[272px]'>
+                <div className='md:flex md:flex-col '>
                   <ProductCard product={product} isQuery={true} />
                 </div>
 
                 {/* Button wrapper */}
-                <div className='flex flex-col my-3 px-2' id='buttons-wrapper'>
+                <div className='flex flex-col px-2' id='buttons-wrapper'>
                   <Link
                     href={`/product/${product.id}`}
-                    className='flex justify-center items-center rounded-lg bg-black text-white py-1 hover:cursor-pointer hover:bg-black/60 active:bg-black/50 transition-all'
+                    className='flex justify-center items-center rounded-lg bg-black text-white py-1 hover:cursor-pointer hover:brightness-60 active:brightness-50 transition-all'
                     onClick={() => {
                       setOpenSearchForm(false);
                       setSearchFocus(false);

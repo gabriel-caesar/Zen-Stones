@@ -14,6 +14,7 @@ export default function NavbarDropdown({
   href: Url
   header?: string;
 }) {
+  console.log(array)
   return (
     <div className='group'>
       <NavButton 
@@ -50,9 +51,10 @@ export default function NavbarDropdown({
                     '
                     aria-label={`${type.product_type.toLowerCase()}-dropdown-option`}
                   >
+
                     <img
                       src={type.featured_image}
-                      alt={`sterling-silver-image`}
+                      alt={`dropdown-image`}
                       className='
                         absolute inset-0 w-full h-full
                         object-cover hover:brightness-80 hover:scale-110 transition-all duration-500

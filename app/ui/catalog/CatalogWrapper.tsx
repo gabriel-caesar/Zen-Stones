@@ -42,7 +42,7 @@ export default function CatalogWrapper({
   }, [selectedSort, filteredProducts]);
 
   return (
-    <div className='' id='category-catalog-wrapper'>
+    <div className='overflow-hidden' id='category-catalog-wrapper'>
       <div
         className='flex flex-col mt-3 md:flex-row md:flex-wrap'
         id='category-products-wrapper'
@@ -172,7 +172,7 @@ export default function CatalogWrapper({
                         aria-label='view-details-button'
                         id='view-details-button'
                         href={`/product/${product.id}`}
-                        className='flex justify-center items-center rounded-lg bg-black text-white py-1 hover:cursor-pointer hover:bg-black/60 active:bg-black/50 transition-all'
+                        className='flex justify-center items-center rounded-lg bg-black text-white py-1 hover:cursor-pointer hover:brightness-60 active:brightness-50 transition-all'
                       >
                         View details
                       </Link>

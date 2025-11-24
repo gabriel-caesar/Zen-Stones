@@ -30,9 +30,12 @@ export default function CatalogCard({
         {/* Product name */}
         <div className='flex flex-col flex-wrap items-start justify-between w-full mb-3 pr-2'>
           <h1 className='text-lg md:text-2xl mr-2' aria-label='product-name'>
-            {product.name}
+            {product.name.length >= 17 ? product.name.slice(0, 17) + '...' : product.name}
           </h1>
-          <p className='text-sm mb-2 text-neutral-500'>{product.category}</p>
+          <div className='flex w-full items-center justify-between'>
+            <p className='text-sm mb-2 text-yellow-500'>{product.product_type}</p>
+            <p className='text-sm mb-2 text-neutral-500'>{product.category}</p>
+          </div>
           {/* Price tag */}
           <div className='bg-black/70 text-white px-2 py-1 rounded'>
             <span className='text-sm'>${product.price}</span>
@@ -57,7 +60,7 @@ export default function CatalogCard({
                   className='text-xs rounded-lg bg-neutral-200 py-1 px-2 font-bold text-black'
                   aria-label={`${prop}-tag`}
                 >
-                  {prop}
+                  {prop.length > 15 ? prop.slice(0, 15) + '...' : prop}
                 </div>
               );
             })}
@@ -65,6 +68,7 @@ export default function CatalogCard({
           </div>
         </div>
 
+        {/* Product Properties */}
         <div id="properties-wrapper" className='hidden md:block'>
           <p className='text-sm text-neutral-500 ml-1 lg:block'>
             Properties
@@ -82,16 +86,13 @@ export default function CatalogCard({
                   className='text-xs rounded-lg bg-neutral-200 py-1 px-2 font-bold text-black'
                   aria-label={`${prop}-tag`}
                 >
-                  {prop}
+                  {prop.length > 15 ? prop.slice(0, 15) + '...' : prop}
                 </div>
               );
             })}
             <div id="etc-container">...</div>
           </div>
         </div>
-        
-
-
       </div>
     </>
   );

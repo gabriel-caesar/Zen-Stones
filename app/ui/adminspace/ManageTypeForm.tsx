@@ -64,7 +64,7 @@ export default function ManageTypeForm({
   return (
     <form
       action={!toggleDelete ? addProductTypeAction : deleteProductTypeAction }
-      className='rounded-lg shadow-xl p-2 bg-neutral-200 md:w-1/2 lg:w-2/5 w-11/12 my-10 relative'
+      className='rounded-lg shadow-xl p-2 bg-neutral-200 md:w-1/2 lg:w-2/5 w-11/12 mb-10 relative'
     >
       <div className='flex justify-between items-center mb-5'>
         <h1 className='flex font-bold'>
@@ -103,7 +103,7 @@ export default function ManageTypeForm({
         options={categories}
         selector={selectedCategory}
         setSelector={setSelectCategory}
-        className='mb-6 sm:w-1/2 lg:w-full'
+        className='mb-6 w-full'
         id='category-selection'
         ariaLabel='category-selection'
         name='category'
@@ -124,7 +124,7 @@ export default function ManageTypeForm({
             options={selectedCategory === 'Jewelry' ? jewelryProductTypes : metaphysicalProductTypes}
             selector={selectedType}
             setSelector={setSelectedType}
-            className='mb-6 sm:w-1/2 lg:w-full'
+            className='mb-6 w-full'
             id='productType-selection'
             ariaLabel='productType-selection'
             name='productType'
@@ -144,7 +144,7 @@ export default function ManageTypeForm({
       ) : (
         // input new product types name field
         <>
-          <div className='sm:w-1/2 lg:w-full w-full mb-6'>
+          <div className='w-full mb-6'>
             <h2 className='mb-1 ml-1 font-bold'>New product type name</h2>
             <input
               value={productTypeName}
@@ -177,6 +177,7 @@ export default function ManageTypeForm({
             name={'featuredPhoto'}
             uploadedImageObjects={uploadedImageObjects}
             setUploadedImageObjects={setUploadedImageObjects}
+            isFeaturing={true}
           />
         </>
       )}
@@ -189,14 +190,13 @@ export default function ManageTypeForm({
 function SubmitButton({ toggleDelete }: { toggleDelete: boolean }) {
   const { pending } = useFormStatus();
   return (
-
     <button
       type='submit'
       disabled={pending}
       id={`${toggleDelete ? 'delete' : 'add'}-productType-button`}
       aria-label={`${toggleDelete ? 'delete' : 'add'}-productType-button`}
       className={`
-          sm:w-1/2 w-full lg:w-full mt-10 flex justify-center items-center
+          w-full mt-10 flex justify-center items-center
           hover:bg-black/60 text-center rounded-lg py-2 transition-all
           ${
             pending
@@ -210,7 +210,5 @@ function SubmitButton({ toggleDelete }: { toggleDelete: boolean }) {
       {toggleDelete ? 'Delete Product Type' : 'Add Product Type'}
       {pending && <Loader2 strokeWidth={1.5} className='loading ml-2' />}
     </button>
-    
-    
   );
 }

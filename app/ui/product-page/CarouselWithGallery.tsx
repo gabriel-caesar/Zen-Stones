@@ -3,6 +3,7 @@
 import { ProductWithImages } from '@/app/lib/types';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { SetStateAction } from 'react';
+import { PiImageBrokenDuotone } from 'react-icons/pi';
 
 // main difference between the regular carousel is that this
 // component centralizes one state to control both carousel and gallery
@@ -37,13 +38,24 @@ export default function CarouselWithGallery({
         className={`flex transition-transform duration-500 relative ${height} ${width}`}
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
       >
-        {product.urls.map((url, i) => (
-          <img
-            key={i}
-            src={url}
-            className={`w-full flex-shrink-0 object-cover`}
-          />
-        ))}
+        {product.urls[0] !== 'NULL'
+          ? product.urls.map((url, i) => (
+              <img
+                key={i}
+                src={url}
+                className={`w-full flex-shrink-0 object-cover`}
+              />
+            ))
+          : (
+            <div
+              id='missing-image-container'
+              aria-label='missing-image-container'
+              className='w-full h-100 text-center flex flex-col items-center justify-center bg-neutral-400 font-bold'
+            >
+              <PiImageBrokenDuotone className='text-5xl' />
+              No images were addded
+            </div>
+          )}
       </div>
 
       <button

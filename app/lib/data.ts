@@ -248,22 +248,6 @@ export async function fetchPrice(categoryName: string, choice: 'max' | 'min') {
   }
 }
 
-// fetches the total count of products under the category(ies) specified
-// used for pagination
-export async function fetchProductCount(categoryName: string | undefined) {
-  try {
-    // returns the count for the amount of products under that category
-    const data = await sql`SELECT COUNT(*) as count
-      FROM products
-      ${categoryName ? sql`WHERE products.category ILIKE ${categoryName}` : sql``}
-    `;
-
-    return data[0].count;
-  } catch (error) {
-    throw new Error(`Couldn't fetch total pages for this category. ${error}`);
-  }
-}
-
 // fetches dynamically against filter values
 export async function fetchFilteredProducts(filters: {
   category?: string | string[];
@@ -306,7 +290,7 @@ export async function fetchFilteredProducts(filters: {
       products.featured_material,
       array_agg(product_images.url) AS urls
     FROM products
-    JOIN product_images ON products.id = product_images.product_id
+    LEFT JOIN product_images ON products.id = product_images.product_id
     WHERE 1=1
       ${category ? sql`AND ARRAY[products.category] && ${capitalizeInitial(category as string[])}` : sql``}
       ${type ? sql`AND ARRAY[products.product_type] && ${capitalizeInitial(type as string[])}` : sql``}
@@ -336,10 +320,70 @@ export async function fetchFilteredProducts(filters: {
       }
     GROUP BY products.id
     ORDER BY products.name
-    LIMIT ${limit} OFFSET ${offset}; --plano
+    LIMIT ${limit} OFFSET ${offset};
   `;
 
+  console.log(products)
+  console.log(filters)
+
   return products;
+}
+
+// fetches dynamically against filter values
+export async function fetchProductCount(filters: {
+  category?: string | string[];
+  type?: string | string[];
+  material?: string | string[];
+  properties?: string | string[];
+  max?: string;
+  min?: string;
+  indication?: string | string[];
+}) {
+  const { category, type, material, properties, max, min, indication } = filters;
+
+  // capitalizes the initial of every element inside of a given array (even for strings with spaces)
+  const capitalizeInitial = (arr?: string[]): string[] => 
+  (arr ?? []).map(str =>
+    str
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ')
+  );
+
+  const count = await sql<{ count: number }[]>`
+    SELECT
+    COUNT(*)
+    FROM products
+    WHERE 1=1
+      ${category ? sql`AND ARRAY[products.category] && ${capitalizeInitial(category as string[])}` : sql``}
+      ${type ? sql`AND ARRAY[products.product_type] && ${capitalizeInitial(type as string[])}` : sql``}
+      ${
+        material
+          ? sql`AND products.material && ${capitalizeInitial(
+              material as string[]
+            )}`
+          : sql``
+      }
+      ${(max && min) ? sql`
+            AND products.price BETWEEN ${min} AND ${max}
+      ` : sql``}
+      ${
+        indication
+          ? sql`AND products.indicated_for && ${capitalizeInitial(
+              indication as string[]
+            )}`
+          : sql``
+      }
+      ${
+        properties
+          ? sql`AND products.properties && ${capitalizeInitial(
+              properties as string[]
+            )}`
+          : sql``
+      };
+  `;
+
+  return count;
 }
 
 // gets all collection products to be rendered in the front-end
@@ -375,5 +419,21 @@ export async function fetchCollectionProducts() {
 
   } catch (error) {
     throw new Error(`Couldn't fetch collection product. ${error}`)
+  }
+}
+
+// used in the edit product type form
+export async function fetchTypeImage(product_type: string, parent_category: string) {
+  try {
+
+    const image = await sql<{ featured_image: string }[]>`
+      SELECT featured_image FROM "types"
+      WHERE product_type = ${product_type} AND parent_category = ${parent_category}
+    `
+
+    return image[0].featured_image;
+
+  } catch (error) {
+    throw new Error(`Couldn't fetch db for type image. ${error}`)
   }
 }

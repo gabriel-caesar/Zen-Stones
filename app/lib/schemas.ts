@@ -1,22 +1,11 @@
 import z from 'zod';
 
 // product type schema to validade user input
-const MAX_IMGS_FEATURED = 1;
 export const productTypeSchema = z.object({
-  featuredPhoto: z
-    .array(
-      z
-        .union([
-          z.instanceof(File), // real file uploads
-          z.object({ name: z.string(), url: z.string(), type: z.string() }), // mimic type
-        ])
-        .refine((file) => file.type.startsWith('image/'), {
-          message: 'Please, upload image files',
-        })
-    )
-    .max(MAX_IMGS_FEATURED, {
-      message: `You can upload up to ${MAX_IMGS_FEATURED} image`,
-    }),
+  featuredPhoto: z.union([
+    z.instanceof(File), // real file uploads
+    z.object({ name: z.string(), url: z.string(), type: z.string() }), // mimic type
+  ]),
   category: z.string(),
   productType: z
     .string()
@@ -70,11 +59,9 @@ export const productSchema = z.object({
   productType: z.string().refine((type) => type !== 'Choose one option...', {
     message: 'You have to choose one option',
   }),
-  price: z
-    .string()
-    .regex(/^(?:\d{1,8})(?:\.\d{1,2})?$/, {
-      message: 'Acceptable price formatting up to: 12650500.25',
-    }),
+  price: z.string().regex(/^(?:\d{1,8})(?:\.\d{1,2})?$/, {
+    message: 'Acceptable price formatting up to: 12650500.25',
+  }),
 
   properties: z.array(z.string()).refine((arr) => arr.length > 0, {
     message: 'Needs to have at least 1 property',
@@ -120,7 +107,9 @@ export const inquirySchema = z.object({
       'Cannot contain numbers, special characters or spaces before and after the text'
     ),
   email: z.email({ message: 'Needs to be an email' }),
-  title: z.string().regex(
+  title: z
+    .string()
+    .regex(
       /^(?!\s)[a-zA-Z'\s\d]+(?<!\s)$/,
       'Cannot contain special characters or spaces before and after the text'
     ),
@@ -128,4 +117,22 @@ export const inquirySchema = z.object({
     message: 'Inquiry needs to be 30+ characters long',
   }),
   product_id: z.string().optional(),
+});
+
+export const editTypeSchema = z.object({
+  category: z
+    .string()
+    .refine((str) => str === 'Jewelry' || str === 'Metaphysical', {
+      message: 'Choose between Jewelry and Metaphysical',
+    }),
+  productType: z.string(),
+  newTypeName: z
+    .string()
+    .regex(
+      /^(?!\s)[a-zA-Z'\s]+(?<!\s)$/,
+      'Cannot contain numbers, special characters or spaces before and after the text'
+    ),
+  newFeaturedPhoto: z
+  .instanceof(File)
+  .optional(),
 });
