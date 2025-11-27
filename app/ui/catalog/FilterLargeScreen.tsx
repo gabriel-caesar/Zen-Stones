@@ -20,9 +20,10 @@ export default function FilterLargeScreen() {
 
   const { paramsArr } = useProductsContext();
 
-  const [category] = paramsArr;
+  const [category, type] = paramsArr;
 
   const categoryArray = makeArray(category);
+  const typeParamArray = makeArray(type);
 
   // array of types, materials and indications based on category filter
   const [typesArray, setTypesArray] = useState<FrequencyArray[] | []>([]);
@@ -51,20 +52,21 @@ export default function FilterLargeScreen() {
     let min: number = 0;
 
     async function dbCall() {
+      console.log('typeParamArray:', typeParamArray)
       if (categoryArray?.includes('jewelry') && categoryArray.includes('metaphysical')) {
         types = await fetchTypes('');
-        materials = await fetchMaterials('');
-        indications = await fetchIndications('');
-        properties = await fetchProperties('');
-        max = await fetchPrice('', 'max');
-        min = await fetchPrice('', 'min');
+        materials = await fetchMaterials('', typeParamArray);
+        indications = await fetchIndications('', typeParamArray);
+        properties = await fetchProperties('', typeParamArray);
+        max = await fetchPrice('', 'max', typeParamArray);
+        min = await fetchPrice('', 'min', typeParamArray);
       } else if (!categoryArray) {
         types = await fetchTypes('');
-        materials = await fetchMaterials('');
-        indications = await fetchIndications('');
-        properties = await fetchProperties('');
-        max = await fetchPrice('', 'max');
-        min = await fetchPrice('', 'min');
+        materials = await fetchMaterials('', typeParamArray);
+        indications = await fetchIndications('', typeParamArray);
+        properties = await fetchProperties('', typeParamArray);
+        max = await fetchPrice('', 'max', typeParamArray);
+        min = await fetchPrice('', 'min', typeParamArray);
       } else {
         // based on the checked states, this variable decides what category will be used to filter
         const categoryCondition = categoryArray.includes('metaphysical')
@@ -74,11 +76,11 @@ export default function FilterLargeScreen() {
           : '';
 
         types = await fetchTypes(categoryCondition);
-        materials = await fetchMaterials(categoryCondition);
-        indications = await fetchIndications(categoryCondition);
-        properties = await fetchProperties(categoryCondition);
-        max = await fetchPrice(categoryCondition, 'max');
-        min = await fetchPrice(categoryCondition, 'min');
+        materials = await fetchMaterials(categoryCondition, typeParamArray);
+        indications = await fetchIndications(categoryCondition, typeParamArray);
+        properties = await fetchProperties(categoryCondition, typeParamArray);
+        max = await fetchPrice(categoryCondition, 'max', typeParamArray);
+        min = await fetchPrice(categoryCondition, 'min', typeParamArray);
       }
 
       setTypesArray(types);
@@ -90,7 +92,7 @@ export default function FilterLargeScreen() {
     }
 
     dbCall();
-  }, [category]);
+  }, [category, type]);
 
   return (
     <nav

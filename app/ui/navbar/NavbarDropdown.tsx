@@ -14,7 +14,6 @@ export default function NavbarDropdown({
   href: Url
   header?: string;
 }) {
-  console.log(array)
   return (
     <div className='group'>
       <NavButton 

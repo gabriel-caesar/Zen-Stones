@@ -139,13 +139,15 @@ export async function fetchTypes(categoryName: string) {
 }
 
 // fetch properties for the catalog filter
-export async function fetchProperties(categoryName: string) {
+export async function fetchProperties(categoryName: string, typeName?: string[]) {
   try {
      // grabbing all distincts property occurrences on products
     const properties = await sql<{prop: string}[]>`
      SELECT DISTINCT unnest(properties) AS prop 
      FROM products
-     ${categoryName ? sql`WHERE category ILIKE ${categoryName}` : sql``}
+     WHERE TRUE
+     ${categoryName ? sql`AND category ILIKE ${categoryName}` : sql``}
+     ${typeName ? sql`AND LOWER(product_type) = ANY(${typeName})` : sql``}
      GROUP BY properties
     `
 
@@ -157,7 +159,9 @@ export async function fetchProperties(categoryName: string) {
           ${m.prop} AS name,
           COUNT(*) AS count
         FROM products
-        WHERE ${m.prop} = ANY(properties);
+        WHERE TRUE
+        AND ${m.prop} = ANY(properties)
+        ${typeName ? sql`AND LOWER(product_type) = ANY(${typeName})` : sql``}
       `
       return x[0];
     }))
@@ -169,14 +173,16 @@ export async function fetchProperties(categoryName: string) {
 }
 
 // fetches an array of frequency objects based on product materials
-export async function fetchMaterials(categoryName: string) {
-  try {
+export async function fetchMaterials(categoryName: string, typeName?: string[]) {
+  try { 
 
     // grabbing all distincts material occurrences on products
     const materials = await sql<{material: string}[]>`
      SELECT DISTINCT unnest(material) AS material 
      FROM products
-     ${categoryName ? sql`WHERE category ILIKE ${categoryName}` : sql``}
+     WHERE TRUE
+     ${categoryName ? sql`AND category ILIKE ${categoryName}` : sql``}
+     ${typeName ? sql`AND LOWER(product_type) = ANY(${typeName})` : sql``}
      GROUP BY material
     `
 
@@ -188,7 +194,9 @@ export async function fetchMaterials(categoryName: string) {
           ${m.material} AS name,
           COUNT(*) AS count
         FROM products
-        WHERE ${m.material} = ANY(material);
+        WHERE TRUE
+        AND ${m.material} = ANY(material)
+        ${typeName ? sql`AND LOWER(product_type) = ANY(${typeName})` : sql``}
       `
       return x[0];
     }))
@@ -201,14 +209,16 @@ export async function fetchMaterials(categoryName: string) {
 }
 
 // fetches an array of frequency objects based on product indications
-export async function fetchIndications(categoryName: string) {
+export async function fetchIndications(categoryName: string, typeName?: string[]) {
   try {
 
     // grabbing all distincts indication occurrences on products
     const indications = await sql<{indication: string}[]>`
       SELECT DISTINCT unnest(indicated_for) AS indication 
       FROM products
-      ${categoryName ? sql`WHERE category ILIKE ${categoryName}` : sql``}
+      WHERE TRUE
+      ${categoryName ? sql`AND category ILIKE ${categoryName}` : sql``}
+      ${typeName ? sql`AND LOWER(product_type) = ANY(${typeName})` : sql``}
       GROUP BY indicated_for
     `
 
@@ -220,7 +230,9 @@ export async function fetchIndications(categoryName: string) {
           ${i.indication} AS name,
           COUNT(*) AS count
         FROM products
-        WHERE ${i.indication} = ANY(indicated_for);
+        WHERE TRUE
+        AND ${i.indication} = ANY(indicated_for)
+        ${typeName ? sql`AND LOWER(product_type) = ANY(${typeName})` : sql``}
       `
       return x[0];
     }))
@@ -233,16 +245,22 @@ export async function fetchIndications(categoryName: string) {
 }
 
 // fetches the most expensive product price or the most cheap
-export async function fetchPrice(categoryName: string, choice: 'max' | 'min') {
+export async function fetchPrice(categoryName: string, choice: 'max' | 'min', typeName?: string[]) {
   try {
     const query = await sql`
       SELECT price FROM products
-      ${categoryName ? sql`WHERE category ILIKE ${categoryName}` : sql``}
+      WHERE TRUE
+      ${categoryName ? sql`AND category ILIKE ${categoryName}` : sql``}
+      ${typeName ? sql`AND LOWER(product_type) = ANY(${typeName})` : sql``}
       ORDER BY price ${choice === 'max' ? sql`DESC` : sql`ASC`}
       LIMIT 1
     `
 
+    // if the filtering returns no product
+    if (query.length <= 0) return 0;
+
     return Number(query[0].price);
+    
   } catch (error) {
     throw new Error(`Couldn't fetch product prices. ${error}`)
   }
@@ -322,9 +340,6 @@ export async function fetchFilteredProducts(filters: {
     ORDER BY products.name
     LIMIT ${limit} OFFSET ${offset};
   `;
-
-  console.log(products)
-  console.log(filters)
 
   return products;
 }
